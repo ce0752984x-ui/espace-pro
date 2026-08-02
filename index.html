@@ -4,39 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>ENT Collège - Plateforme Enseignants</title>
-    <!-- Firebase SDK -->
+    <!-- Firebase SDK (pour ceux qui veulent, sinon localStorage) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js">
     </script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js">
     </script>
-    <!-- Font Awesome & Chart.js -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
     </script>
     <style>
-        /* ===== CSS COMPLET (identique à la version précédente) ===== */
+        /* --- CSS minimal mais complet --- */
         :root {
             --primary: #4361ee;
-            --primary-light: #6c8cff;
             --primary-dark: #2a3fa8;
-            --secondary: #f72585;
-            --success: #4caf50;
-            --danger: #e74c3c;
-            --warning: #f9a825;
-            --info: #42a5f5;
-            --gray-50: #f8fafc;
             --gray-100: #f1f5f9;
             --gray-200: #e2e8f0;
             --gray-300: #cbd5e1;
-            --gray-400: #94a3b8;
             --gray-500: #64748b;
-            --gray-600: #475569;
             --gray-700: #334155;
             --gray-800: #1e293b;
             --gray-900: #0f172a;
             --sidebar-width: 260px;
             --header-height: 64px;
-            --border-radius: 16px;
+            --border-radius: 12px;
             --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
             --transition: all 0.25s ease;
         }
@@ -47,7 +37,7 @@
         }
         body {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background: var(--gray-50);
+            background: #f8fafc;
             color: var(--gray-800);
             display: flex;
             height: 100vh;
@@ -84,7 +74,6 @@
             text-align: center;
             color: var(--gray-500);
             margin-bottom: 24px;
-            font-size: 15px;
         }
         .login-card label {
             font-weight: 600;
@@ -100,13 +89,12 @@
             border: 1.5px solid var(--gray-200);
             border-radius: 10px;
             font-size: 15px;
-            background: var(--gray-50);
+            background: #fff;
             transition: var(--transition);
         }
         .login-card input:focus {
             border-color: var(--primary);
             outline: none;
-            background: #fff;
             box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.12);
         }
         .login-card button {
@@ -128,7 +116,7 @@
             transform: translateY(-1px);
         }
         .login-error {
-            color: var(--danger);
+            color: #e74c3c;
             font-size: 14px;
             margin-top: 12px;
             text-align: center;
@@ -171,7 +159,7 @@
             width: 44px;
             height: 44px;
             border-radius: 12px;
-            background: var(--primary-light);
+            background: var(--primary);
             color: #fff;
             display: flex;
             align-items: center;
@@ -197,7 +185,7 @@
             align-items: center;
             gap: 14px;
             padding: 12px 20px;
-            color: var(--gray-600);
+            color: var(--gray-700);
             font-size: 15px;
             cursor: pointer;
             transition: var(--transition);
@@ -219,18 +207,10 @@
             text-align: center;
             font-size: 17px;
         }
-        #sidebar .menu .menu-item .badge {
-            margin-left: auto;
-            background: var(--secondary);
-            color: #fff;
-            font-size: 11px;
-            padding: 2px 8px;
-            border-radius: 20px;
-        }
         #sidebar .logout-btn {
             padding: 16px 20px;
             border-top: 1px solid var(--gray-200);
-            color: var(--danger);
+            color: #e74c3c;
             font-weight: 600;
             cursor: pointer;
             display: flex;
@@ -270,13 +250,13 @@
             border: none;
             font-size: 22px;
             cursor: pointer;
-            color: var(--gray-600);
+            color: var(--gray-500);
             padding: 4px 8px;
         }
         #header .left .page-title {
             font-size: 20px;
             font-weight: 700;
-            color: var(--gray-800);
+            color: var(--gray-900);
         }
         #header .right {
             display: flex;
@@ -293,14 +273,11 @@
             border-radius: 20px;
             background: var(--gray-100);
         }
-        #header .right .sync-indicator .fa-spin {
-            color: var(--primary);
-        }
         #header .right .notification-bell {
             position: relative;
             cursor: pointer;
             font-size: 20px;
-            color: var(--gray-600);
+            color: var(--gray-700);
             transition: var(--transition);
         }
         #header .right .notification-bell:hover {
@@ -310,7 +287,7 @@
             position: absolute;
             top: -6px;
             right: -8px;
-            background: var(--secondary);
+            background: #e74c3c;
             color: #fff;
             font-size: 11px;
             border-radius: 30px;
@@ -335,7 +312,7 @@
             width: 34px;
             height: 34px;
             border-radius: 10px;
-            background: var(--primary-light);
+            background: var(--primary);
             color: #fff;
             display: flex;
             align-items: center;
@@ -352,7 +329,7 @@
             flex: 1;
             padding: 24px 28px;
             overflow-y: auto;
-            background: var(--gray-50);
+            background: #f8fafc;
         }
         .page-section {
             display: none;
@@ -388,7 +365,6 @@
             box-shadow: var(--box-shadow);
             padding: 20px 22px;
             margin-bottom: 20px;
-            transition: var(--transition);
             border: 1px solid var(--gray-100);
         }
         .card-header {
@@ -440,19 +416,16 @@
             background: var(--primary);
         }
         .stat-card .icon.green {
-            background: var(--success);
+            background: #4caf50;
         }
         .stat-card .icon.orange {
-            background: var(--warning);
+            background: #f9a825;
         }
         .stat-card .icon.red {
-            background: var(--danger);
+            background: #e74c3c;
         }
         .stat-card .icon.purple {
             background: #8b5cf6;
-        }
-        .stat-card .icon.pink {
-            background: var(--secondary);
         }
         .stat-card .info h3 {
             font-size: 26px;
@@ -479,28 +452,26 @@
         .btn-primary {
             background: var(--primary);
             color: #fff;
-            box-shadow: 0 2px 8px rgba(67, 97, 238, 0.25);
         }
         .btn-primary:hover {
             background: var(--primary-dark);
-            transform: translateY(-1px);
         }
         .btn-success {
-            background: var(--success);
+            background: #4caf50;
             color: #fff;
         }
         .btn-success:hover {
             background: #388e3c;
         }
         .btn-danger {
-            background: var(--danger);
+            background: #e74c3c;
             color: #fff;
         }
         .btn-danger:hover {
             background: #c62828;
         }
         .btn-warning {
-            background: var(--warning);
+            background: #f9a825;
             color: #212529;
         }
         .btn-warning:hover {
@@ -541,7 +512,7 @@
             border: 1.5px solid var(--gray-200);
             border-radius: 10px;
             font-size: 14px;
-            background: var(--gray-50);
+            background: #fff;
             transition: var(--transition);
         }
         .form-group input:focus,
@@ -549,7 +520,6 @@
         .form-group textarea:focus {
             border-color: var(--primary);
             outline: none;
-            background: #fff;
             box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.12);
         }
         .form-group textarea {
@@ -568,9 +538,9 @@
         table th {
             text-align: left;
             padding: 12px 10px;
-            background: var(--gray-50);
+            background: var(--gray-100);
             font-weight: 600;
-            color: var(--gray-600);
+            color: var(--gray-700);
             border-bottom: 2px solid var(--gray-200);
         }
         table td {
@@ -578,7 +548,7 @@
             border-bottom: 1px solid var(--gray-100);
         }
         table tr:hover td {
-            background: var(--gray-50);
+            background: var(--gray-100);
         }
         .badge-status {
             display: inline-block;
@@ -642,11 +612,11 @@
             border: none;
             font-size: 24px;
             cursor: pointer;
-            color: var(--gray-400);
+            color: var(--gray-500);
             transition: var(--transition);
         }
         .modal .close-modal:hover {
-            color: var(--gray-700);
+            color: var(--gray-800);
         }
         .calendar-grid {
             display: grid;
@@ -657,7 +627,7 @@
             padding: 8px 4px;
             text-align: center;
             border-radius: 8px;
-            background: var(--gray-50);
+            background: var(--gray-100);
             font-size: 14px;
         }
         .calendar-grid .day-header {
@@ -671,7 +641,7 @@
             transition: var(--transition);
         }
         .calendar-grid .day-number:hover {
-            background: var(--primary-light);
+            background: var(--primary);
             color: #fff;
         }
         .calendar-grid .day-number.has-event {
@@ -691,7 +661,7 @@
             border: 1.5px solid var(--gray-200);
             border-radius: 10px;
             font-size: 14px;
-            background: var(--gray-50);
+            background: #fff;
             min-width: 140px;
         }
         .search-box input:focus,
@@ -738,50 +708,11 @@
             transition: width 0.3s;
         }
         .alert-item {
-            border-left: 4px solid var(--warning);
+            border-left: 4px solid #f9a825;
             padding: 10px 14px;
             margin: 6px 0;
-            background: var(--gray-50);
+            background: var(--gray-100);
             border-radius: 8px;
-        }
-        .reunion-creneau {
-            border: 1px solid var(--gray-200);
-            border-radius: 10px;
-            padding: 10px;
-            margin: 6px 0;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        .reunion-creneau:hover {
-            background: var(--gray-50);
-        }
-        .reunion-creneau.selected {
-            border-color: var(--success);
-            background: #e8f5e9;
-        }
-        .permission-badge {
-            display: inline-block;
-            padding: 2px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-            margin: 2px;
-        }
-        .perm-read {
-            background: #d4edda;
-            color: #155724;
-        }
-        .perm-write {
-            background: #cce5ff;
-            color: #004085;
-        }
-        .perm-delete {
-            background: #f8d7da;
-            color: #721c24;
-        }
-        .perm-none {
-            background: #e2e3e5;
-            color: #383d41;
         }
         .widget {
             border: 2px dashed var(--gray-300);
@@ -807,7 +738,7 @@
         }
         .widget .widget-header .remove-widget {
             cursor: pointer;
-            color: var(--danger);
+            color: #e74c3c;
         }
         .widgets-grid {
             display: grid;
@@ -815,7 +746,7 @@
             gap: 20px;
         }
         .maintenance-banner {
-            background: var(--warning);
+            background: #f9a825;
             color: #212529;
             padding: 12px 20px;
             text-align: center;
@@ -823,12 +754,12 @@
             border-radius: var(--border-radius);
             margin-bottom: 20px;
         }
-        @media (max-width:1024px) {
+        @media (max-width: 1024px) {
             .grid-4 {
                 grid-template-columns: 1fr 1fr;
             }
         }
-        @media (max-width:768px) {
+        @media (max-width: 768px) {
             #sidebar {
                 transform: translateX(-100%);
                 width: 280px;
@@ -876,7 +807,7 @@
                 grid-template-columns: 1fr;
             }
         }
-        @media (max-width:480px) {
+        @media (max-width: 480px) {
             #header {
                 padding: 0 12px;
             }
@@ -908,7 +839,7 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: var(--danger);
+            background: #e74c3c;
             color: #fff;
             border: none;
             border-radius: 50px;
@@ -966,7 +897,7 @@
                 <span class="page-title" id="currentPageTitle">Tableau de bord</span>
             </div>
             <div class="right">
-                <span class="sync-indicator" id="syncIndicator"><i class="fas fa-circle-notch fa-spin"></i> Synchro...</span>
+                <span class="sync-indicator" id="syncIndicator"><i class="fas fa-check-circle" style="color:#4caf50;"></i> Local</span>
                 <div class="notification-bell" id="notificationBell">
                     <i class="fas fa-bell"></i>
                     <span class="count" id="notifCount">0</span>
@@ -1011,7 +942,7 @@
 
     <script>
         // ================================================================
-        //  CONFIGURATION FIREBASE
+        //  CONFIGURATION FIREBASE (optionnel)
         // ================================================================
         const firebaseConfig = {
             apiKey: "AIzaSyAPE0DhujXsx3Rmf2T1nYXsRFUQcVsrq6w",
@@ -1021,229 +952,37 @@
             messagingSenderId: "1060096783609",
             appId: "1:1060096783609:web:115a4c7f3648ace8de5e28"
         };
-
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const COLLECTION = 'ent_data';
-        let useFirestore = true;
-
-        console.log('✅ Firestore connecté.');
+        let useFirestore = false; // mettre à true pour activer Firestore
+        let db = null;
+        try {
+            if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "VOTRE_API_KEY") {
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.firestore();
+                useFirestore = true;
+                console.log('✅ Firestore disponible.');
+            }
+        } catch (e) {
+            console.warn('⚠️ Firestore non configuré, utilisation localStorage.');
+        }
 
         // ================================================================
-        //  COUCHES D'ACCÈS AUX DONNÉES AVEC SYNCHRONISATION TEMPS RÉEL
+        //  COUCHES D'ACCÈS AUX DONNÉES (localStorage + Firestore optionnel)
         // ================================================================
         let currentData = null;
-        let dataListeners = [];
-        let isSyncing = false;
 
-        function notifySync() {
-            document.getElementById('syncIndicator').innerHTML =
-                '<i class="fas fa-circle-notch fa-spin"></i> Synchro...';
-            isSyncing = true;
-        }
-
-        function notifySyncDone() {
-            document.getElementById('syncIndicator').innerHTML =
-                '<i class="fas fa-check-circle" style="color:var(--success);"></i> Synchronisé';
-            isSyncing = false;
-        }
-
-        // Écoute en temps réel
-        function startRealtimeListener() {
-            dataListeners.forEach(unsub => unsub());
-            dataListeners = [];
-
-            const unsub = db.collection(COLLECTION).doc('main')
-                .onSnapshot(async (doc) => {
-                    notifySync();
-                    try {
-                        if (doc.exists) {
-                            const data = doc.data();
-                            const defaultData = getDefaultData();
-                            for (let key in defaultData) {
-                                if (!data.hasOwnProperty(key) || !Array.isArray(data[key])) {
-                                    data[key] = defaultData[key];
-                                }
-                            }
-                            if (!data.settings) data.settings = defaultData.settings;
-                            if (!data.settings.modules) data.settings.modules = defaultData.settings.modules;
-                            if (!data.settings.security) data.settings.security = defaultData.settings.security;
-                            if (!data.settings.maintenance) data.settings.maintenance = defaultData.settings
-                            .maintenance;
-                            currentData = data;
-                            window._cachedData = data;
-                            localStorage.setItem('ent_data', JSON.stringify(data));
-                            notifySyncDone();
-                            // Re-render la page active
-                            const user = getCurrentUser();
-                            if (user) {
-                                const activePage = document.querySelector('.page-section.active');
-                                if (activePage) {
-                                    const pageId = activePage.id.replace('page-', '');
-                                    renderPage(pageId);
-                                    updateNotifBadge();
-                                }
-                            }
-                        } else {
-                            const defaultData = getDefaultData();
-                            await db.collection(COLLECTION).doc('main').set(defaultData);
-                            currentData = defaultData;
-                            window._cachedData = defaultData;
-                            localStorage.setItem('ent_data', JSON.stringify(defaultData));
-                            notifySyncDone();
-                        }
-                    } catch (e) {
-                        console.error('Erreur synchro:', e);
-                        notifySyncDone();
-                        // fallback localStorage
-                        const raw = localStorage.getItem('ent_data');
-                        if (raw) {
-                            currentData = JSON.parse(raw);
-                            window._cachedData = currentData;
-                        }
-                    }
-                }, (error) => {
-                    console.error('Erreur listener:', error);
-                    notifySyncDone();
-                    const raw = localStorage.getItem('ent_data');
-                    if (raw) {
-                        currentData = JSON.parse(raw);
-                        window._cachedData = currentData;
-                    }
-                });
-
-            dataListeners.push(unsub);
-        }
-
-        async function saveDataToFirestore(data) {
-            notifySync();
-            try {
-                await db.collection(COLLECTION).doc('main').set(data);
-                currentData = data;
-                window._cachedData = data;
-                localStorage.setItem('ent_data', JSON.stringify(data));
-                notifySyncDone();
-                return true;
-            } catch (e) {
-                console.error('Erreur sauvegarde Firestore:', e);
-                localStorage.setItem('ent_data', JSON.stringify(data));
-                currentData = data;
-                window._cachedData = data;
-                notifySyncDone();
-                return false;
-            }
-        }
-
-        function loadDataSync() {
-            if (currentData) return currentData;
-            const raw = localStorage.getItem('ent_data');
-            if (raw) {
-                try {
-                    currentData = JSON.parse(raw);
-                    window._cachedData = currentData;
-                    return currentData;
-                } catch (e) { /* ignore */ }
-            }
-            const defaultData = getDefaultData();
-            currentData = defaultData;
-            window._cachedData = defaultData;
-            localStorage.setItem('ent_data', JSON.stringify(defaultData));
-            db.collection(COLLECTION).doc('main').set(defaultData).catch(() => {});
-            return defaultData;
-        }
-
-        async function loadDataAsync() {
-            if (currentData) return currentData;
-            try {
-                const doc = await db.collection(COLLECTION).doc('main').get();
-                if (doc.exists) {
-                    const data = doc.data();
-                    const defaultData = getDefaultData();
-                    for (let key in defaultData) {
-                        if (!data.hasOwnProperty(key) || !Array.isArray(data[key])) {
-                            data[key] = defaultData[key];
-                        }
-                    }
-                    if (!data.settings) data.settings = defaultData.settings;
-                    if (!data.settings.modules) data.settings.modules = defaultData.settings.modules;
-                    if (!data.settings.security) data.settings.security = defaultData.settings.security;
-                    if (!data.settings.maintenance) data.settings.maintenance = defaultData.settings.maintenance;
-                    currentData = data;
-                    window._cachedData = data;
-                    localStorage.setItem('ent_data', JSON.stringify(data));
-                    return data;
-                } else {
-                    const defaultData = getDefaultData();
-                    await db.collection(COLLECTION).doc('main').set(defaultData);
-                    currentData = defaultData;
-                    window._cachedData = defaultData;
-                    localStorage.setItem('ent_data', JSON.stringify(defaultData));
-                    return defaultData;
-                }
-            } catch (e) {
-                console.error('Erreur chargement Firestore:', e);
-                return loadDataSync();
-            }
-        }
-
-        async function getData() {
-            if (currentData) return currentData;
-            return await loadDataAsync();
-        }
-
-        function getDataSync() {
-            return loadDataSync();
-        }
-
-        async function saveData(data) {
-            currentData = data;
-            window._cachedData = data;
-            localStorage.setItem('ent_data', JSON.stringify(data));
-            await saveDataToFirestore(data);
-        }
-
-        async function initData() {
-            const data = await loadDataAsync();
-            const defaultData = getDefaultData();
-            for (let key in defaultData) {
-                if (!data.hasOwnProperty(key) || !Array.isArray(data[key])) {
-                    data[key] = defaultData[key];
-                }
-            }
-            if (!data.settings) data.settings = defaultData.settings;
-            if (!data.settings.modules) data.settings.modules = defaultData.settings.modules;
-            if (!data.settings.security) data.settings.security = defaultData.settings.security;
-            if (!data.settings.maintenance) data.settings.maintenance = defaultData.settings.maintenance;
-            const admin = data.users.find(u => u.role === 'admin');
-            if (admin) {
-                const modules = Object.keys(data.settings.modules);
-                modules.forEach(m => {
-                    if (!admin.permissions) admin.permissions = {};
-                    if (!admin.permissions[m]) admin.permissions[m] = { read: true, write: true, delete: true };
-                });
-            }
-            await saveData(data);
-            currentData = data;
-            window._cachedData = data;
-            startRealtimeListener();
-        }
-
-        // ---------- DONNÉES PAR DÉFAUT ----------
         function getDefaultData() {
             return {
                 users: [
                     { id: 'u1', nom: 'Admin', prenom: 'Super', email: 'admin@college.fr', password: 'Admin123!',
-                        role: 'admin', discipline: 'Administration', photo: '', active: true, permissions: {} },
+                        role: 'admin', discipline: 'Administration', active: true, permissions: {} },
                     { id: 'u2', nom: 'Dupont', prenom: 'Marie', email: 'marie.dupont@college.fr',
-                        password: 'Marie123!', role: 'enseignant', discipline: 'Mathématiques', photo: '',
-                    active: true, permissions: {} },
+                        password: 'Marie123!', role: 'enseignant', discipline: 'Mathématiques', active: true,
+                        permissions: {} },
                     { id: 'u3', nom: 'Martin', prenom: 'Jean', email: 'jean.martin@college.fr', password: 'Jean123!',
-                        role: 'enseignant', discipline: 'Français', photo: '', active: true, permissions: {} }
+                        role: 'enseignant', discipline: 'Français', active: true, permissions: {} }
                 ],
                 settings: {
                     platformName: 'ENT Collège',
-                    logo: '',
-                    primaryColor: '#4361ee',
                     modules: {
                         documents: true,
                         inscriptions: true,
@@ -1267,32 +1006,170 @@
                     message: 'La plateforme est en maintenance. Veuillez revenir ultérieurement.' }
                 },
                 categories_documents: [
-                    { id: 'cat1', nom: 'Courriers' }, { id: 'cat2', nom: 'Formulaires' },
-                    { id: 'cat3', nom: 'Demploi' }, { id: 'cat4', nom: 'Sorties scolaires' },
-                    { id: 'cat5', nom: 'Documents administratifs' }, { id: 'cat6', nom: 'Circulaires' },
+                    { id: 'cat1', nom: 'Courriers' },
+                    { id: 'cat2', nom: 'Formulaires' },
+                    { id: 'cat3', nom: 'Demploi' },
+                    { id: 'cat4', nom: 'Sorties scolaires' },
+                    { id: 'cat5', nom: 'Documents administratifs' },
+                    { id: 'cat6', nom: 'Circulaires' },
                     { id: 'cat7', nom: 'Notes de service' }
                 ],
-                documents: [],
-                evenements: [],
-                inscriptions: [],
-                salles: [],
-                reservations: [],
-                absences: [],
-                notifications: [],
-                logs: [],
-                agenda_events: [],
-                sondages: [],
-                reunions: [],
-                alertes: [],
-                widgets: [],
-                edt_events: []
+                documents: [
+                    { id: 'd1', nom: 'Règlement intérieur 2025', categorieId: 'cat5', date: '2025-01-15T10:00:00',
+                        permissions: [] },
+                    { id: 'd2', nom: 'Formulaire de sortie', categorieId: 'cat2', date: '2025-02-01T09:30:00',
+                        permissions: [] }
+                ],
+                evenements: [
+                    { id: 'e1', titre: 'Formation numérique', description: 'Initiation outils collaboratifs',
+                        date: '2025-03-10', heure: '14:00', lieu: 'Salle info', nbPlacesMax: 15, cloture: false,
+                        dateCreation: '2025-02-01T08:00:00' },
+                    { id: 'e2', titre: 'Sortie au musée', description: 'Visite histoire naturelle', date: '2025-03-25',
+                        heure: '09:00', lieu: 'Musée', nbPlacesMax: 30, cloture: false,
+                    dateCreation: '2025-02-05T09:00:00' }
+                ],
+                inscriptions: [
+                    { id: 'i1', evenementId: 'e1', userId: 'u2', userNom: 'Marie Dupont', date: '2025-02-02T10:00:00',
+                        statut: 'En attente' },
+                    { id: 'i2', evenementId: 'e1', userId: 'u3', userNom: 'Jean Martin', date: '2025-02-03T14:30:00',
+                        statut: 'En attente' }
+                ],
+                salles: [
+                    { id: 's1', nom: 'Salle A101', capacite: 30, equipements: 'Vidéoprojecteur', batiment: 'A',
+                        etage: '1', disponible: true },
+                    { id: 's2', nom: 'Laboratoire physique', capacite: 20, equipements: 'Paillasses', batiment: 'B',
+                        etage: '0', disponible: true }
+                ],
+                reservations: [
+                    { id: 'r1', salleId: 's1', userId: 'u2', date: '2025-02-15', heure: '10:00', statut: 'Approuvée',
+                        dateCreation: '2025-02-10T08:00:00' }
+                ],
+                absences: [
+                    { id: 'a1', userId: 'u2', date: '2025-02-20', heure: '08:00', motif: 'Maladie',
+                        commentaire: 'Rendez-vous médical', statut: 'Acceptée',
+                    dateCreation: '2025-02-18T10:00:00' }
+                ],
+                notifications: [
+                    { id: 'n1', userId: 'u2', message: 'Réservation approuvée pour salle A101', type: 'success',
+                        read: false, date: '2025-02-10T08:30:00' }
+                ],
+                logs: [
+                    { id: 'l1', date: '2025-02-01T08:00:00', userId: 'u1', userName: 'Super Admin',
+                    action: 'Connexion', details: 'admin@college.fr' }
+                ],
+                agenda_events: [
+                    { id: 'ag1', titre: 'Conseil de classe', date: '2025-02-25', heure: '17:00',
+                        lieu: 'Salle des professeurs', couleur: '#4361ee' }
+                ],
+                sondages: [{
+                    id: 'so1',
+                    titre: 'Choix des manuels',
+                    description: 'Votez pour les manuels 2025',
+                    dateFin: '2025-03-15',
+                    questions: [
+                        { texte: 'Manuel de maths ?', type: 'binaire', options: ['A', 'B'] },
+                        { texte: 'Manuel de français ?', type: 'multiple', options: ['X', 'Y', 'Z'] }
+                    ],
+                    votes: [
+                        { userId: 'u2', reponses: { 0: 0, 1: 1 }, date: '2025-02-10T10:00:00' }
+                    ],
+                    cloture: false,
+                    dateCreation: '2025-02-01T09:00:00'
+                }],
+                reunions: [{
+                    id: 're1',
+                    titre: 'Préparation rentrée',
+                    description: 'Organisation rentrée 2025',
+                    dateLimite: '2025-03-01',
+                    creneaux: [
+                        { date: '2025-02-25', heure: '14:00', duree: 60 },
+                        { date: '2025-02-26', heure: '10:00', duree: 90 }
+                    ],
+                    votes: [
+                        { userId: 'u2', creneauIndex: 0 }
+                    ],
+                    statut: 'ouverte',
+                    creneauGagne: null,
+                    dateCreation: '2025-02-10T08:00:00'
+                }],
+                alertes: [
+                    { id: 'al1', userId: 'u2', titre: 'Rappel sortie musée',
+                        message: 'Préparez les autorisations.', date: '2025-02-20', heure: '08:00', lu: false,
+                        dateCreation: '2025-02-15T10:00:00' }
+                ],
+                widgets: [
+                    { id: 'w1', userId: 'u1', type: 'agenda', config: { titre: 'Mon agenda', vue: 'mois' } },
+                    { id: 'w2', userId: 'u1', type: 'notifications', config: { titre: 'Notifications', nb: 5 } },
+                    { id: 'w3', userId: 'u2', type: 'stats', config: { titre: 'Mes stats' } }
+                ],
+                edt_events: [
+                    { id: 'edt1', userId: 'u2', titre: 'Cours Maths', date: '2025-02-21', heure: '08:00',
+                        lieu: 'Salle 101', source: 'demo' }
+                ]
             };
         }
 
-        // ---------- ID GÉNÉRATEUR ----------
+        function getDataSync() {
+            if (currentData) return currentData;
+            const raw = localStorage.getItem('ent_data');
+            if (raw) {
+                try {
+                    currentData = JSON.parse(raw);
+                    return currentData;
+                } catch (e) { /* ignore */ }
+            }
+            const defaultData = getDefaultData();
+            currentData = defaultData;
+            localStorage.setItem('ent_data', JSON.stringify(defaultData));
+            // Si Firestore est activé, on tente une synchronisation initiale
+            if (useFirestore && db) {
+                db.collection('ent_data').doc('main').set(defaultData).catch(() => {});
+            }
+            return defaultData;
+        }
+
+        async function getData() {
+            if (currentData) return currentData;
+            // Tentative de chargement depuis Firestore si disponible
+            if (useFirestore && db) {
+                try {
+                    const doc = await db.collection('ent_data').doc('main').get();
+                    if (doc.exists) {
+                        const data = doc.data();
+                        const defaultData = getDefaultData();
+                        for (let key in defaultData) {
+                            if (!data.hasOwnProperty(key) || !Array.isArray(data[key])) {
+                                data[key] = defaultData[key];
+                            }
+                        }
+                        currentData = data;
+                        localStorage.setItem('ent_data', JSON.stringify(data));
+                        return data;
+                    }
+                } catch (e) {
+                    console.warn('Firestore non accessible, fallback localStorage.');
+                }
+            }
+            return getDataSync();
+        }
+
+        async function saveData(data) {
+            currentData = data;
+            localStorage.setItem('ent_data', JSON.stringify(data));
+            if (useFirestore && db) {
+                try {
+                    await db.collection('ent_data').doc('main').set(data);
+                } catch (e) {
+                    console.warn('Sauvegarde Firestore échouée, donnée locale OK.');
+                }
+            }
+        }
+
         function generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 6); }
 
-        // ---------- SESSION ----------
+        // ================================================================
+        //  SESSION
+        // ================================================================
         let sessionTimer = null;
         const SESSION_CHECK = 10000;
 
@@ -1321,17 +1198,6 @@
             if (sessionTimer) clearInterval(sessionTimer);
             sessionTimer = null;
         }
-        window.addEventListener('beforeunload', () => localStorage.setItem('ent_last_activity', Date.now()));
-        document.addEventListener('visibilitychange', function() {
-            if (document.hidden) localStorage.setItem('ent_last_activity', Date.now());
-            else {
-                const last = parseInt(localStorage.getItem('ent_last_activity') || '0');
-                const data = getDataSync();
-                const timeout = (data.settings.security.sessionTimeout || 600) * 1000;
-                if (Date.now() - last > timeout) { clearSession(); logoutUser(); } else { const u = getCurrentUser(); if (u)
-                        renewSession(u.id); }
-            }
-        });
 
         function resetSessionTimer() {
             if (sessionTimer) clearInterval(sessionTimer);
@@ -1339,7 +1205,8 @@
                 const session = JSON.parse(localStorage.getItem('ent_session') || 'null');
                 if (!session) { clearInterval(sessionTimer);
                     sessionTimer = null; return; }
-                if (session.expiry && Date.now() > session.expiry) { clearSession(); logoutUser(); }
+                if (session.expiry && Date.now() > session.expiry) { clearSession();
+                    logoutUser(); }
             }, SESSION_CHECK);
         }
 
@@ -1351,7 +1218,21 @@
             document.getElementById('main').style.display = 'none';
         }
 
-        // ---------- LOGS & NOTIFICATIONS ----------
+        window.addEventListener('beforeunload', () => localStorage.setItem('ent_last_activity', Date.now()));
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) localStorage.setItem('ent_last_activity', Date.now());
+            else {
+                const last = parseInt(localStorage.getItem('ent_last_activity') || '0');
+                const data = getDataSync();
+                const timeout = (data.settings.security.sessionTimeout || 600) * 1000;
+                if (Date.now() - last > timeout) { clearSession();
+                    logoutUser(); } else { const u = getCurrentUser(); if (u) renewSession(u.id); }
+            }
+        });
+
+        // ================================================================
+        //  LOGS & NOTIFICATIONS
+        // ================================================================
         async function addLog(action, details = '') {
             const data = await getData();
             const user = getCurrentUser();
@@ -1366,17 +1247,10 @@
             await saveData(data);
         }
 
-        async function addNotification(userId, message, type = 'info', lien = '') {
+        async function addNotification(userId, message, type = 'info') {
             const data = await getData();
-            data.notifications.push({
-                id: generateId(),
-                userId,
-                message,
-                type,
-                lien,
-                read: false,
-                date: new Date().toISOString()
-            });
+            data.notifications.push({ id: generateId(), userId, message, type, read: false, date: new Date()
+                    .toISOString() });
             await saveData(data);
             updateNotifBadge();
         }
@@ -1392,18 +1266,17 @@
             document.getElementById('notifCount').textContent = getUnreadNotifCount(user.id);
         }
 
-        // ---------- AUTH ----------
+        // ================================================================
+        //  AUTH
+        // ================================================================
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             const data = await getData();
-            // Vérifier maintenance
             if (data.settings.maintenance && data.settings.maintenance.active) {
                 const user = data.users.find(u => u.email === email && u.password === password && u.active !== false);
-                if (user && user.role === 'admin') {
-                    // ok
-                } else {
+                if (!user || user.role !== 'admin') {
                     document.getElementById('loginError').textContent = data.settings.maintenance.message ||
                         'Plateforme en maintenance.';
                     return;
@@ -1413,7 +1286,6 @@
             if (user) {
                 setSession(user.id);
                 await addLog('Connexion', user.email);
-                localStorage.setItem('ent_last_activity', Date.now());
                 render();
                 document.getElementById('loginError').textContent = '';
             } else {
@@ -1421,6 +1293,7 @@
                 'Email ou mot de passe incorrect, ou compte inactif.';
             }
         });
+
         document.getElementById('logoutBtn').addEventListener('click', async function() {
             const user = getCurrentUser();
             if (user) await addLog('Déconnexion', user.email);
@@ -1429,7 +1302,9 @@
             document.getElementById('main').style.display = 'none';
         });
 
-        // ---------- PERMISSIONS ----------
+        // ================================================================
+        //  PERMISSIONS
+        // ================================================================
         function hasPermission(user, module, action) {
             if (!user) return false;
             if (user.role === 'admin') return true;
@@ -1437,12 +1312,6 @@
             if (!perms) return false;
             return perms[action] === true;
         }
-
-        function canRead(user, module) { return hasPermission(user, module, 'read'); }
-
-        function canWrite(user, module) { return hasPermission(user, module, 'write'); }
-
-        function canDelete(user, module) { return hasPermission(user, module, 'delete'); }
 
         function isAdmin() { const u = getCurrentUser(); return u && u.role === 'admin'; }
 
@@ -1473,39 +1342,34 @@
             const activePage = document.querySelector('.page-section.active');
             if (activePage) loadPage(activePage.id.replace('page-', ''));
             else loadPage('dashboard');
-            localStorage.setItem('ent_last_activity', Date.now());
         }
 
-        // ---------- MENU ----------
         function buildMenu(user, data) {
             const menu = document.getElementById('mainMenu');
             const items = [
-                { id: 'dashboard', icon: 'fa-gauge-high', label: 'Tableau de bord', module: null },
-                { id: 'documents', icon: 'fa-folder-open', label: 'Documents', module: 'documents' },
-                { id: 'inscriptions', icon: 'fa-pen-to-square', label: 'Inscriptions', module: 'inscriptions' },
-                { id: 'agenda', icon: 'fa-calendar-days', label: 'Agenda', module: 'agenda' },
-                { id: 'salles', icon: 'fa-building', label: 'Salles', module: 'salles' },
-                { id: 'absences', icon: 'fa-user-slash', label: 'Absences', module: 'absences' },
-                { id: 'sondages', icon: 'fa-chart-simple', label: 'Sondages', module: 'sondages' },
-                { id: 'reunions', icon: 'fa-handshake', label: 'Réunions', module: 'reunions' },
-                { id: 'alertes', icon: 'fa-clock', label: 'Alertes', module: 'alertes' },
-                { id: 'notifications', icon: 'fa-bell', label: 'Notifications', module: 'notifications' },
-                { id: 'recherche', icon: 'fa-magnifying-glass', label: 'Recherche', module: 'recherche' },
-                { id: 'statistiques', icon: 'fa-chart-pie', label: 'Statistiques', module: 'statistiques' },
-                { id: 'admin', icon: 'fa-gear', label: 'Administration', module: null, adminOnly: true },
-                { id: 'parametres', icon: 'fa-sliders', label: 'Paramètres', module: 'parametres' },
-                { id: 'droits', icon: 'fa-lock', label: 'Droits', module: 'droits', adminOnly: true },
-                { id: 'tableaudebord', icon: 'fa-table-cells-large', label: 'Tableau de bord perso.',
-                module: 'tableaudebord' },
-                { id: 'edt', icon: 'fa-calendar-week', label: 'Emploi du temps (EDT)', module: 'edt' },
-                { id: 'maintenance', icon: 'fa-triangle-exclamation', label: 'Maintenance', module: 'maintenance',
-                    adminOnly: true }
+                { id: 'dashboard', icon: 'fa-gauge-high', label: 'Tableau de bord' },
+                { id: 'documents', icon: 'fa-folder-open', label: 'Documents' },
+                { id: 'inscriptions', icon: 'fa-pen-to-square', label: 'Inscriptions' },
+                { id: 'agenda', icon: 'fa-calendar-days', label: 'Agenda' },
+                { id: 'salles', icon: 'fa-building', label: 'Salles' },
+                { id: 'absences', icon: 'fa-user-slash', label: 'Absences' },
+                { id: 'sondages', icon: 'fa-chart-simple', label: 'Sondages' },
+                { id: 'reunions', icon: 'fa-handshake', label: 'Réunions' },
+                { id: 'alertes', icon: 'fa-clock', label: 'Alertes' },
+                { id: 'notifications', icon: 'fa-bell', label: 'Notifications' },
+                { id: 'recherche', icon: 'fa-magnifying-glass', label: 'Recherche' },
+                { id: 'statistiques', icon: 'fa-chart-pie', label: 'Statistiques' },
+                { id: 'admin', icon: 'fa-gear', label: 'Administration', adminOnly: true },
+                { id: 'parametres', icon: 'fa-sliders', label: 'Paramètres' },
+                { id: 'droits', icon: 'fa-lock', label: 'Droits', adminOnly: true },
+                { id: 'tableaudebord', icon: 'fa-table-cells-large', label: 'Tableau de bord perso.' },
+                { id: 'edt', icon: 'fa-calendar-week', label: 'Emploi du temps (EDT)' },
+                { id: 'maintenance', icon: 'fa-triangle-exclamation', label: 'Maintenance', adminOnly: true }
             ];
             let html = '';
             for (const item of items) {
                 if (item.adminOnly && !isAdmin()) continue;
-                if (item.module && data.settings.modules[item.module] === false) continue;
-                if (item.module && !isAdmin() && !canRead(user, item.module)) continue;
+                if (data.settings.modules[item.id] === false) continue;
                 const active = document.querySelector('.page-section.active')?.id === 'page-' + item.id ? 'active' : '';
                 html += `<div class="menu-item ${active}" data-page="${item.id}"><i class="fas ${item.icon}"></i> ${item.label}</div>`;
             }
@@ -1514,9 +1378,6 @@
                 el.addEventListener('click', function() {
                     const page = this.dataset.page;
                     loadPage(page);
-                    localStorage.setItem('ent_last_activity', Date.now());
-                    const u = getCurrentUser();
-                    if (u) renewSession(u.id);
                 });
             });
         }
@@ -1528,707 +1389,79 @@
                 target.classList.add('active');
                 const menuItem = document.querySelector(`.menu-item[data-page="${pageId}"]`);
                 document.getElementById('currentPageTitle').textContent = menuItem ? menuItem.textContent.trim() :
-                pageId;
+                    pageId;
                 document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
                 if (menuItem) menuItem.classList.add('active');
                 renderPage(pageId);
             }
         }
 
-        // ================================================================
-        //  DÉCLARATION DE TOUTES LES FONCTIONS GLOBALES (Boutons)
-        //  Nous allons définir toutes les fonctions utilisées dans les onclick
-        // ================================================================
-
-        // --- Filtres documents ---
-        window.filterDocs = function() {
-            const s = document.getElementById('docSearch')?.value.toLowerCase() || '';
-            const c = document.getElementById('docCategoryFilter')?.value || '';
-            document.querySelectorAll('#docTableBody tr').forEach(row => {
-                const text = row.textContent.toLowerCase();
-                const cat = row.dataset.cat || '';
-                let show = true;
-                if (s && !text.includes(s)) show = false;
-                if (c && cat !== c) show = false;
-                row.style.display = show ? '' : 'none';
-            });
-        };
-
-        window.downloadDoc = function(id) {
-            const data = getDataSync();
-            const d = data.documents.find(d => d.id === id);
-            if (d) { alert(`Téléchargement de "${d.nom}" (simulé)`);
-                addLog('Téléchargement document', d.nom); }
-        };
-
-        window.deleteDocument = async function(id) {
-            if (!confirm('Supprimer ?')) return;
-            const data = await getData();
-            data.documents = data.documents.filter(d => d.id !== id);
-            await saveData(data);
-            await addLog('Suppression document', id);
-            renderDocuments();
-        };
-
-        window.editDocument = function(id) {
-            const data = getDataSync();
-            const d = data.documents.find(d => d.id === id);
-            if (d) openModal('documentForm', d);
-        };
-
-        // --- Inscriptions ---
-        window.sinscrire = async function(id) {
-            const data = await getData();
-            const user = getCurrentUser();
-            const evt = data.evenements.find(e => e.id === id);
-            if (!evt) return;
-            const inscrits = data.inscriptions.filter(i => i.evenementId === id);
-            if (evt.nbPlacesMax && inscrits.length >= evt.nbPlacesMax) { alert('Places épuisées.'); return; }
-            if (data.inscriptions.some(i => i.evenementId === id && i.userId === user.id)) { alert('Déjà inscrit.'); return; }
-            data.inscriptions.push({ id: generateId(), evenementId: id, userId: user.id, userNom: user.prenom + ' ' + user
-                    .nom, date: new Date().toISOString(), statut: 'En attente' });
-            await saveData(data);
-            await addLog('Inscription', evt.titre);
-            addNotification(user.id, `Inscrit à "${evt.titre}"`, 'success');
-            renderInscriptions();
-        };
-
-        window.desinscrire = async function(id) {
-            if (!confirm('Se désinscrire ?')) return;
-            const data = await getData();
-            const user = getCurrentUser();
-            data.inscriptions = data.inscriptions.filter(i => !(i.evenementId === id && i.userId === user.id));
-            await saveData(data);
-            await addLog('Désinscription', id);
-            renderInscriptions();
-        };
-
-        window.deleteEvenement = async function(id) {
-            if (!confirm('Supprimer ?')) return;
-            const data = await getData();
-            data.evenements = data.evenements.filter(e => e.id !== id);
-            data.inscriptions = data.inscriptions.filter(i => i.evenementId !== id);
-            await saveData(data);
-            await addLog('Suppression événement', id);
-            renderInscriptions();
-        };
-
-        window.editEvenement = function(id) {
-            const data = getDataSync();
-            const evt = data.evenements.find(e => e.id === id);
-            if (evt) openModal('evenementForm', evt);
-        };
-
-        window.toggleCloture = async function(id) {
-            const data = await getData();
-            const evt = data.evenements.find(e => e.id === id);
-            if (evt) { evt.cloture = !evt.cloture;
-                await saveData(data);
-                await addLog('Clôture/réouverture', evt.titre);
-                renderInscriptions(); }
-        };
-
-        window.exporterListe = function(id) {
-            const data = getDataSync();
-            const evt = data.evenements.find(e => e.id === id);
-            if (!evt) return;
-            const inscrits = data.inscriptions.filter(i => i.evenementId === id);
-            const csv = inscrits.map(i => i.userNom).join('\n');
-            const blob = new Blob([`Liste "${evt.titre}"\n${csv}`], { type: 'text/csv' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `inscrits_${evt.titre}.csv`;
-            a.click();
-            addLog('Export liste', evt.titre);
-        };
-
-        // --- Agenda ---
-        window.setAgendaView = function(view) {
-            document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
-            document.querySelector(`.tabs .tab[data-view="${view}"]`)?.classList.add('active');
-            const container = document.getElementById('agendaView');
-            const data = getDataSync();
-            const events = data.agenda_events || [];
-            if (view === 'jour') {
-                const today = new Date().toDateString();
-                const dayEvents = events.filter(e => new Date(e.date).toDateString() === today);
-                container.innerHTML = `<div class="card">
-                    <h4>Événements du ${new Date().toLocaleDateString()}</h4>
-                    ${dayEvents.length ? dayEvents.map(e => `
-                        <div style="border-left:4px solid ${e.couleur||'#4361ee'}; padding:8px 12px; margin:6px 0; background:var(--gray-50); border-radius:8px;">
-                            <strong>${e.titre}</strong> - ${e.heure||''} ${e.lieu ? '📍 '+e.lieu : ''}
-                            ${isAdmin() ? `<button class="btn btn-sm btn-danger" onclick="deleteAgendaEvent('${e.id}')"><i class="fas fa-trash"></i></button>` : ''}
-                        </div>
-                    `).join('') : '<p class="text-muted">Aucun événement.</p>'}
-                </div>`;
-            } else if (view === 'semaine') {
-                const today = new Date();
-                let html = `<div class="card"><h4>Semaine du ${today.toLocaleDateString()}</h4>`;
-                for (let i = 0; i < 7; i++) {
-                    const d = new Date(today);
-                    d.setDate(d.getDate() + i);
-                    const dayEvents = events.filter(e => new Date(e.date).toDateString() === d.toDateString());
-                    html += `<div style="padding:6px 12px; background:var(--gray-50); border-radius:6px; margin:4px 0;">
-                        <strong>${d.toLocaleDateString()}</strong> : ${dayEvents.length ? dayEvents.map(e=>e.titre).join(', ') : 'Aucun'}
-                    </div>`;
-                }
-                html += '</div>';
-                container.innerHTML = html;
-            } else if (view === 'mois') {
-                const mois = ['Janv', 'Févr', 'Mars', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sept', 'Oct', 'Nov', 'Déc'];
-                const now = new Date();
-                const year = now.getFullYear(),
-                    month = now.getMonth();
-                const firstDay = new Date(year, month, 1).getDay();
-                const days = new Date(year, month + 1, 0).getDate();
-                let html = `<div class="card"><h4>${mois[month]} ${year}</h4><div class="calendar-grid">`;
-                const jours = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
-                for (let j of jours) html += `<div class="day day-header">${j}</div>`;
-                for (let i = 0; i < (firstDay === 0 ? 6 : firstDay - 1); i++) html += `<div class="day"></div>`;
-                for (let d = 1; d <= days; d++) {
-                    const dateObj = new Date(year, month, d);
-                    const hasEvent = events.some(e => new Date(e.date).toDateString() === dateObj.toDateString());
-                    html += `<div class="day day-number ${hasEvent?'has-event':''}">${d}</div>`;
-                }
-                html += '</div></div>';
-                container.innerHTML = html;
+        function renderPage(page) {
+            switch (page) {
+                case 'dashboard':
+                    renderDashboard();
+                    break;
+                case 'documents':
+                    renderDocuments();
+                    break;
+                case 'inscriptions':
+                    renderInscriptions();
+                    break;
+                case 'agenda':
+                    renderAgenda();
+                    break;
+                case 'salles':
+                    renderSalles();
+                    break;
+                case 'absences':
+                    renderAbsences();
+                    break;
+                case 'sondages':
+                    renderSondages();
+                    break;
+                case 'reunions':
+                    renderReunions();
+                    break;
+                case 'alertes':
+                    renderAlertes();
+                    break;
+                case 'notifications':
+                    renderNotifications();
+                    break;
+                case 'recherche':
+                    renderRecherche();
+                    break;
+                case 'admin':
+                    renderAdmin();
+                    break;
+                case 'statistiques':
+                    renderStatistiques();
+                    break;
+                case 'parametres':
+                    renderParametres();
+                    break;
+                case 'droits':
+                    renderDroits();
+                    break;
+                case 'tableaudebord':
+                    renderTableauDeBord();
+                    break;
+                case 'edt':
+                    renderEDT();
+                    break;
+                case 'maintenance':
+                    renderMaintenance();
+                    break;
+                default:
+                    document.getElementById('page-dashboard').innerHTML = '<p>Page en construction</p>';
             }
-        };
-
-        window.deleteAgendaEvent = async function(id) {
-            if (!confirm('Supprimer ?')) return;
-            const data = await getData();
-            data.agenda_events = data.agenda_events.filter(e => e.id !== id);
-            await saveData(data);
-            await addLog('Suppression agenda', id);
-            renderAgenda();
-        };
-
-        // --- Salles ---
-        window.reserverSalle = async function(salleId) {
-            const data = await getData();
-            const user = getCurrentUser();
-            const date = prompt('Date (JJ/MM/AAAA) :');
-            if (!date) return;
-            const heure = prompt('Heure (HH:MM) :');
-            if (!heure) return;
-            const salle = data.salles.find(s => s.id === salleId);
-            if (salle && salle.disponible === false) { alert('Salle indisponible.'); return; }
-            if (data.reservations.some(r => r.salleId === salleId && r.date === date && r.heure === heure && r.statut !==
-                    'Refusée')) {
-                alert('Conflit détecté.');
-                return;
-            }
-            data.reservations.push({ id: generateId(), salleId, userId: user.id, date, heure, statut: 'En attente',
-                dateCreation: new Date().toISOString() });
-            await saveData(data);
-            await addLog('Réservation salle', salleId);
-            addNotification(user.id, `Demande de réservation ${salle.nom} le ${date} à ${heure}`, 'info');
-            renderSalles();
-        };
-
-        window.annulerReservation = async function(id) {
-            if (!confirm('Annuler ?')) return;
-            const data = await getData();
-            data.reservations = data.reservations.filter(r => r.id !== id);
-            await saveData(data);
-            await addLog('Annulation réservation', id);
-            renderSalles();
-        };
-
-        window.approuverReservation = async function(id) {
-            const data = await getData();
-            const r = data.reservations.find(r => r.id === id);
-            if (r) { r.statut = 'Approuvée';
-                await saveData(data);
-                await addLog('Approbation réservation', id);
-                addNotification(r.userId, 'Réservation approuvée', 'success');
-                renderSalles(); }
-        };
-
-        window.refuserReservation = async function(id) {
-            const data = await getData();
-            const r = data.reservations.find(r => r.id === id);
-            if (r) { r.statut = 'Refusée';
-                await saveData(data);
-                await addLog('Refus réservation', id);
-                addNotification(r.userId, 'Réservation refusée', 'danger');
-                renderSalles(); }
-        };
-
-        window.supprimerReservation = async function(id) {
-            if (!confirm('Supprimer ?')) return;
-            const data = await getData();
-            data.reservations = data.reservations.filter(r => r.id !== id);
-            await saveData(data);
-            await addLog('Suppression réservation', id);
-            renderSalles();
-        };
-
-        window.deleteSalle = async function(id) {
-            if (!confirm('Supprimer ?')) return;
-            const data = await getData();
-            data.salles = data.salles.filter(s => s.id !== id);
-            await saveData(data);
-            await addLog('Suppression salle', id);
-            renderSalles();
-        };
-
-        window.editSalle = function(id) {
-            const data = getDataSync();
-            const s = data.salles.find(s => s.id === id);
-            if (s) openModal('salleForm', s);
-        };
-
-        window.toggleDispoSalle = async function(id) {
-            const data = await getData();
-            const s = data.salles.find(s => s.id === id);
-            if (s) { s.disponible = s.disponible === false ? true : false;
-                await saveData(data);
-                await addLog('Toggle disponibilité', s.nom);
-                renderSalles(); }
-        };
-
-        // --- Absences ---
-        window.accepterAbsence = async function(id) {
-            const data = await getData();
-            const a = data.absences.find(a => a.id === id);
-            if (a) { a.statut = 'Acceptée';
-                await saveData(data);
-                await addLog('Acceptation absence', id);
-                addNotification(a.userId, 'Absence acceptée', 'success');
-                renderAbsences(); }
-        };
-
-        window.refuserAbsence = async function(id) {
-            const data = await getData();
-            const a = data.absences.find(a => a.id === id);
-            if (a) { a.statut = 'Refusée';
-                await saveData(data);
-                await addLog('Refus absence', id);
-                addNotification(a.userId, 'Absence refusée', 'danger');
-                renderAbsences(); }
-        };
-
-        window.supprimerAbsence = async function(id) {
-            if (!confirm('Supprimer ?')) return;
-            const data = await getData();
-            data.absences = data.absences.filter(a => a.id !== id);
-            await saveData(data);
-            await addLog('Suppression absence', id);
-            renderAbsences();
-        };
-
-        // --- Sondages ---
-        window.voterSondage = function(sondageId) {
-            const data = getDataSync();
-            const user = getCurrentUser();
-            const s = data.sondages.find(s => s.id === sondageId);
-            if (!s || s.cloture || new Date(s.dateFin) < new Date()) { alert('Sondage clôturé.'); return; }
-            if (s.votes.some(v => v.userId === user.id)) { alert('Déjà voté.'); return; }
-            const body = document.getElementById('modalBody');
-            let html = `<h2>Voter : ${s.titre}</h2><form id="voteForm">`;
-            s.questions.forEach((q, idx) => {
-                html += `<div class="form-group"><label>${q.texte}</label>`;
-                q.options.forEach((opt, oi) => {
-                    html += `<div><input type="radio" name="q${idx}" value="${oi}" required> ${opt}</div>`;
-                });
-                html += `</div>`;
-            });
-            html += `<button type="submit" class="btn btn-primary btn-block">Envoyer</button></form>`;
-            body.innerHTML = html;
-            document.getElementById('modalOverlay').classList.add('active');
-            document.getElementById('voteForm').addEventListener('submit', async function(e) {
-                e.preventDefault();
-                const reponses = {};
-                s.questions.forEach((q, idx) => {
-                    const val = document.querySelector(`input[name="q${idx}"]:checked`);
-                    if (val) reponses[idx] = parseInt(val.value);
-                });
-                if (Object.keys(reponses).length !== s.questions.length) { alert('Répondez à tout.'); return; }
-                const data = await getData();
-                const s2 = data.sondages.find(s => s.id === sondageId);
-                if (!s2) return;
-                s2.votes.push({ userId: user.id, reponses, date: new Date().toISOString() });
-                await saveData(data);
-                await addLog('Vote sondage', s2.titre);
-                addNotification(user.id, `Vote dans "${s2.titre}"`, 'success');
-                closeModal();
-                renderSondages();
-            });
-        };
-
-        window.deleteSondage = async function(id) {
-            if (!confirm('Supprimer ?')) return;
-            const data = await getData();
-            data.sondages = data.sondages.filter(s => s.id !== id);
-            await saveData(data);
-            await addLog('Suppression sondage', id);
-            renderSondages();
-        };
-
-        window.editSondage = function(id) {
-            const data = getDataSync();
-            const s = data.sondages.find(s => s.id === id);
-            if (s) openModal('sondageForm', s);
-        };
-
-        window.toggleClotureSondage = async function(id) {
-            const data = await getData();
-            const s = data.sondages.find(s => s.id === id);
-            if (s) { s.cloture = !s.cloture;
-                await saveData(data);
-                await addLog('Toggle clôture sondage', s.titre);
-                renderSondages(); }
-        };
-
-        // --- Réunions ---
-        window.voterReunion = function(reunionId) {
-            const data = getDataSync();
-            const user = getCurrentUser();
-            const r = data.reunions.find(r => r.id === reunionId);
-            if (!r || r.statut === 'cloture' || new Date(r.dateLimite) < new Date()) { alert('Réunion clôturée.'); return; }
-            if (r.votes.some(v => v.userId === user.id)) { alert('Déjà voté.'); return; }
-            const body = document.getElementById('modalBody');
-            let html = `<h2>Voter - ${r.titre}</h2><form id="voteReunionForm">`;
-            r.creneaux.forEach((c, idx) => {
-                html +=
-                    `<div><input type="radio" name="creneau" value="${idx}" required> ${new Date(c.date).toLocaleDateString()} ${c.heure} (${c.duree} min)</div>`;
-            });
-            html += `<button type="submit" class="btn btn-primary btn-block">Voter</button></form>`;
-            body.innerHTML = html;
-            document.getElementById('modalOverlay').classList.add('active');
-            document.getElementById('voteReunionForm').addEventListener('submit', async function(e) {
-                e.preventDefault();
-                const val = document.querySelector('input[name="creneau"]:checked');
-                if (!val) { alert('Choisissez un créneau.'); return; }
-                const idx = parseInt(val.value);
-                const data = await getData();
-                const r2 = data.reunions.find(r => r.id === reunionId);
-                if (!r2) return;
-                r2.votes.push({ userId: user.id, creneauIndex: idx });
-                await saveData(data);
-                await addLog('Vote réunion', r2.titre);
-                addNotification(user.id, `Vote pour "${r2.titre}"`, 'success');
-                closeModal();
-                renderReunions();
-            });
-        };
-
-        window.cloturerReunion = async function(id) {
-            const data = await getData();
-            const r = data.reunions.find(r => r.id === id);
-            if (r) { r.statut = r.statut === 'cloture' ? 'ouverte' : 'cloture';
-                await saveData(data);
-                await addLog('Toggle clôture réunion', r.titre);
-                renderReunions(); }
-        };
-
-        window.finaliserReunion = async function(id) {
-            const data = await getData();
-            const r = data.reunions.find(r => r.id === id);
-            if (!r || r.creneaux.length === 0) { alert('Aucun créneau.'); return; }
-            const counts = r.creneaux.map((_, idx) => r.votes.filter(v => v.creneauIndex === idx).length);
-            const max = Math.max(...counts);
-            const gagneIdx = counts.indexOf(max);
-            r.creneauGagne = gagneIdx;
-            r.statut = 'cloture';
-            const creneau = r.creneaux[gagneIdx];
-            data.agenda_events.push({ id: generateId(), titre: 'Réunion: ' + r.titre, date: creneau.date,
-                heure: creneau.heure, lieu: 'Salle à définir', couleur: '#4361ee' });
-            await saveData(data);
-            await addLog('Finalisation réunion', r.titre);
-            addNotification(r.id, `Réunion "${r.titre}" planifiée le ${new Date(creneau.date).toLocaleDateString()} à ${creneau.heure}`,
-                'success');
-            renderReunions();
-            renderAgenda();
-        };
-
-        window.deleteReunion = async function(id) {
-            if (!confirm('Supprimer ?')) return;
-            const data = await getData();
-            data.reunions = data.reunions.filter(r => r.id !== id);
-            await saveData(data);
-            await addLog('Suppression réunion', id);
-            renderReunions();
-        };
-
-        window.editReunion = function(id) {
-            const data = getDataSync();
-            const r = data.reunions.find(r => r.id === id);
-            if (r) openModal('reunionForm', r);
-        };
-
-        // --- Alertes ---
-        window.marquerAlerteLu = async function(id) {
-            const data = await getData();
-            const a = data.alertes.find(a => a.id === id);
-            if (a) { a.lu = true;
-                await saveData(data);
-                renderAlertes(); }
-        };
-
-        window.supprimerAlerte = async function(id) {
-            if (!confirm('Supprimer ?')) return;
-            const data = await getData();
-            data.alertes = data.alertes.filter(a => a.id !== id);
-            await saveData(data);
-            renderAlertes();
-        };
-
-        // --- Notifications ---
-        window.marquerLu = async function(id) {
-            const data = await getData();
-            const n = data.notifications.find(n => n.id === id);
-            if (n) { n.read = true;
-                await saveData(data);
-                renderNotifications();
-                updateNotifBadge(); }
-        };
-
-        window.marquerToutLu = async function() {
-            const data = await getData();
-            const user = getCurrentUser();
-            data.notifications.forEach(n => { if (n.userId === user.id) n.read = true; });
-            await saveData(data);
-            renderNotifications();
-            updateNotifBadge();
-        };
-
-        // --- Recherche ---
-        window.globalSearch = function() {
-            const q = document.getElementById('globalSearch').value.toLowerCase().trim();
-            const container = document.getElementById('searchResults');
-            if (!q) { container.innerHTML = '<p class="text-muted">Saisissez un terme.</p>'; return; }
-            const data = getDataSync();
-            const results = [];
-            (data.users || []).forEach(u => { if ((u.nom + u.prenom + u.email).toLowerCase().includes(q)) results.push({
-                    type: 'Utilisateur',
-                    label: u.prenom + ' ' + u.nom + ' (' + u.email + ')'
-                }); });
-            (data.salles || []).forEach(s => { if ((s.nom + s.batiment + s.equipements).toLowerCase().includes(q))
-                    results.push({ type: 'Salle', label: s.nom }); });
-            (data.documents || []).forEach(d => { if (d.nom.toLowerCase().includes(q)) results.push({ type: 'Document',
-                    label: d.nom }); });
-            (data.evenements || []).forEach(e => { if ((e.titre + e.description).toLowerCase().includes(q)) results
-                    .push({ type: 'Événement', label: e.titre }); });
-            (data.absences || []).forEach(a => { if ((a.motif + a.commentaire).toLowerCase().includes(q)) { const u =
-                        data.users.find(u => u.id === a.userId);
-                    results.push({ type: 'Absence', label: (u ? u.prenom + ' ' + u.nom : '') + ' - ' + a.motif }); } });
-            (data.sondages || []).forEach(s => { if ((s.titre + s.description).toLowerCase().includes(q)) results.push({
-                    type: 'Sondage',
-                    label: s.titre
-                }); });
-            container.innerHTML = results.length ? results.map(r =>
-                `<div style="padding:6px 0; border-bottom:1px solid var(--gray-100);"><strong>${r.type}</strong> : ${r.label}</div>`
-                ).join('') : '<p class="text-muted">Aucun résultat.</p>';
-        };
-
-        // --- Admin utilisateurs ---
-        window.editUser = function(id) {
-            const data = getDataSync();
-            const u = data.users.find(u => u.id === id);
-            if (u) openModal('userForm', u);
-        };
-
-        window.deleteUser = async function(id) {
-            if (!confirm('Supprimer ?')) return;
-            const data = await getData();
-            if (data.users.filter(u => u.role === 'admin').length <= 1 && data.users.find(u => u.id === id)?.role ===
-                'admin') {
-                alert('Impossible de supprimer le dernier admin.');
-                return;
-            }
-            data.users = data.users.filter(u => u.id !== id);
-            await saveData(data);
-            await addLog('Suppression utilisateur', id);
-            renderAdmin();
-        };
-
-        window.toggleUserActive = async function(id) {
-            const data = await getData();
-            const u = data.users.find(u => u.id === id);
-            if (u) { u.active = !u.active;
-                await saveData(data);
-                await addLog('Toggle actif', u.email);
-                renderAdmin(); }
-        };
-
-        window.resetPassword = async function(id) {
-            const data = await getData();
-            const u = data.users.find(u => u.id === id);
-            if (!u) return;
-            const pwd = prompt('Nouveau mot de passe pour ' + u.email + ' :');
-            if (pwd && pwd.length >= 6) { u.password = pwd;
-                await saveData(data);
-                await addLog('Reset password', u.email);
-                alert('Mot de passe mis à jour.');
-                renderAdmin(); } else alert('Minimum 6 caractères.');
-        };
-
-        // --- Widgets ---
-        window.ajouterWidget = function() {
-            const data = getDataSync();
-            const user = getCurrentUser();
-            const types = [
-                { value: 'agenda', label: 'Agenda' },
-                { value: 'notifications', label: 'Notifications' },
-                { value: 'stats', label: 'Mes statistiques' }
-            ];
-            const body = document.getElementById('modalBody');
-            let html = `
-                <h2>Ajouter un widget</h2>
-                <form id="widgetForm">
-                    <div class="form-group">
-                        <label>Type</label>
-                        <select id="widgetType">
-                            ${types.map(t => `<option value="${t.value}">${t.label}</option>`).join('')}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Titre</label>
-                        <input type="text" id="widgetTitre" placeholder="Titre du widget" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-block">Ajouter</button>
-                </form>
-            `;
-            body.innerHTML = html;
-            document.getElementById('modalOverlay').classList.add('active');
-            document.getElementById('widgetForm').addEventListener('submit', async function(e) {
-                e.preventDefault();
-                const type = document.getElementById('widgetType').value;
-                const titre = document.getElementById('widgetTitre').value;
-                const config = { titre };
-                if (type === 'notifications') config.nb = 5;
-                const data = await getData();
-                data.widgets.push({ id: generateId(), userId: user.id, type, config });
-                await saveData(data);
-                await addLog('Ajout widget', type);
-                closeModal();
-                renderTableauDeBord();
-            });
-        };
-
-        window.supprimerWidget = async function(id) {
-            if (!confirm('Supprimer ce widget ?')) return;
-            const data = await getData();
-            data.widgets = data.widgets.filter(w => w.id !== id);
-            await saveData(data);
-            await addLog('Suppression widget', id);
-            renderTableauDeBord();
-        };
-
-        // --- EDT ---
-        window.importerICS = async function() {
-            const data = await getData();
-            const user = getCurrentUser();
-            const now = new Date();
-            for (let i = 0; i < 5; i++) {
-                const d = new Date(now);
-                d.setDate(d.getDate() + i + 1);
-                data.edt_events.push({
-                    id: generateId(),
-                    userId: user.id,
-                    titre: `Cours ${['Maths','Français','Histoire','SVT','Anglais'][i % 5]}`,
-                    date: d.toISOString().split('T')[0],
-                    heure: `${8 + i}:00`,
-                    lieu: `Salle ${100 + i}`,
-                    source: 'ics_import'
-                });
-            }
-            await saveData(data);
-            await addLog('Import ICS', '5 événements simulés');
-            alert('Import ICS simulé : 5 événements ajoutés.');
-            renderEDT();
-        };
-
-        window.supprimerEDTEvent = async function(id) {
-            if (!confirm('Supprimer cet événement ?')) return;
-            const data = await getData();
-            data.edt_events = data.edt_events.filter(e => e.id !== id);
-            await saveData(data);
-            await addLog('Suppression événement EDT', id);
-            renderEDT();
-        };
-
-        // --- Paramètres ---
-        window.exporterDonnees = function() {
-            const data = getDataSync();
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'ent_data_backup.json';
-            a.click();
-            addLog('Export données');
-        };
-
-        window.importerFichier = function(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = async function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    await saveData(data);
-                    alert('Importé. Rechargement...');
-                    location.reload();
-                } catch (err) {
-                    alert('Fichier invalide.');
-                }
-            };
-            reader.readAsText(file);
-        };
-
-        window.reinitialiserPlateforme = async function() {
-            if (!confirm('Tout supprimer ? Irréversible.')) return;
-            const defaultData = getDefaultData();
-            await saveData(defaultData);
-            alert('Réinitialisé.');
-            location.reload();
-        };
-
-        // --- Droits ---
-        window.editDroits = function(userId, module) {
-            const data = getDataSync();
-            const user = data.users.find(u => u.id === userId);
-            if (!user) return;
-            if (!user.permissions) user.permissions = {};
-            const p = user.permissions[module] || { read: false, write: false, delete: false };
-            const body = document.getElementById('modalBody');
-            body.innerHTML = `
-                <h2>Droits pour ${user.prenom} ${user.nom} - ${module}</h2>
-                <form id="droitsForm">
-                    <div><input type="checkbox" id="dRead" ${p.read?'checked':''}> <label for="dRead">Lecture</label></div>
-                    <div><input type="checkbox" id="dWrite" ${p.write?'checked':''}> <label for="dWrite">Écriture</label></div>
-                    <div><input type="checkbox" id="dDelete" ${p.delete?'checked':''}> <label for="dDelete">Suppression</label></div>
-                    <button type="submit" class="btn btn-primary btn-block">Enregistrer</button>
-                </form>
-            `;
-            document.getElementById('modalOverlay').classList.add('active');
-            document.getElementById('droitsForm').addEventListener('submit', async function(e) {
-                e.preventDefault();
-                const data = await getData();
-                const user2 = data.users.find(u => u.id === userId);
-                if (!user2) return;
-                user2.permissions[module] = { read: document.getElementById('dRead').checked, write: document
-                        .getElementById('dWrite').checked, delete: document.getElementById('dDelete')
-                        .checked };
-                await saveData(data);
-                await addLog('Modification droits', user2.email + ' - ' + module);
-                closeModal();
-                renderDroits();
-            });
-        };
-
-        // --- Maintenance ---
-        // (le formulaire est géré directement dans renderMaintenance avec son propre submit)
+        }
 
         // ================================================================
-        //  FONCTIONS DE RENDU (asynchrones, appellent les fonctions globales)
+        //  FONCTIONS DE RENDU (toutes les pages)
         // ================================================================
-
-        async function renderDashboard() {
-            const data = await getData();
+        function renderDashboard() {
+            const data = getDataSync();
             const user = getCurrentUser();
             const absences = data.absences || [];
             const reservations = data.reservations || [];
@@ -2304,9 +1537,9 @@
             c.innerHTML = html;
         }
 
-        // Documents
-        async function renderDocuments() {
-            const data = await getData();
+        // --- Documents ---
+        function renderDocuments() {
+            const data = getDataSync();
             const user = getCurrentUser();
             const isAdminUser = isAdmin();
             const docs = data.documents || [];
@@ -2349,9 +1582,9 @@
             document.getElementById('page-documents').innerHTML = html;
         }
 
-        // Inscriptions
-        async function renderInscriptions() {
-            const data = await getData();
+        // --- Inscriptions ---
+        function renderInscriptions() {
+            const data = getDataSync();
             const user = getCurrentUser();
             const isAdminUser = isAdmin();
             const evenements = data.evenements || [];
@@ -2398,9 +1631,9 @@
             document.getElementById('page-inscriptions').innerHTML = html;
         }
 
-        // Agenda
-        async function renderAgenda() {
-            const data = await getData();
+        // --- Agenda ---
+        function renderAgenda() {
+            const data = getDataSync();
             const isAdminUser = isAdmin();
             let html = `
                 <div class="flex-between mb-20">
@@ -2418,9 +1651,61 @@
             setAgendaView('jour');
         }
 
-        // Salles
-        async function renderSalles() {
-            const data = await getData();
+        function setAgendaView(view) {
+            document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.tabs .tab[data-view="${view}"]`)?.classList.add('active');
+            const container = document.getElementById('agendaView');
+            const data = getDataSync();
+            const events = data.agenda_events || [];
+            if (view === 'jour') {
+                const today = new Date().toDateString();
+                const dayEvents = events.filter(e => new Date(e.date).toDateString() === today);
+                container.innerHTML = `<div class="card">
+                    <h4>Événements du ${new Date().toLocaleDateString()}</h4>
+                    ${dayEvents.length ? dayEvents.map(e => `
+                        <div style="border-left:4px solid ${e.couleur||'#4361ee'}; padding:8px 12px; margin:6px 0; background:var(--gray-100); border-radius:8px;">
+                            <strong>${e.titre}</strong> - ${e.heure||''} ${e.lieu ? '📍 '+e.lieu : ''}
+                            ${isAdmin() ? `<button class="btn btn-sm btn-danger" onclick="deleteAgendaEvent('${e.id}')"><i class="fas fa-trash"></i></button>` : ''}
+                        </div>
+                    `).join('') : '<p class="text-muted">Aucun événement.</p>'}
+                </div>`;
+            } else if (view === 'semaine') {
+                const today = new Date();
+                let html = `<div class="card"><h4>Semaine du ${today.toLocaleDateString()}</h4>`;
+                for (let i = 0; i < 7; i++) {
+                    const d = new Date(today);
+                    d.setDate(d.getDate() + i);
+                    const dayEvents = events.filter(e => new Date(e.date).toDateString() === d.toDateString());
+                    html += `<div style="padding:6px 12px; background:var(--gray-100); border-radius:6px; margin:4px 0;">
+                        <strong>${d.toLocaleDateString()}</strong> : ${dayEvents.length ? dayEvents.map(e=>e.titre).join(', ') : 'Aucun'}
+                    </div>`;
+                }
+                html += '</div>';
+                container.innerHTML = html;
+            } else if (view === 'mois') {
+                const mois = ['Janv', 'Févr', 'Mars', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sept', 'Oct', 'Nov', 'Déc'];
+                const now = new Date();
+                const year = now.getFullYear(),
+                    month = now.getMonth();
+                const firstDay = new Date(year, month, 1).getDay();
+                const days = new Date(year, month + 1, 0).getDate();
+                let html = `<div class="card"><h4>${mois[month]} ${year}</h4><div class="calendar-grid">`;
+                const jours = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+                for (let j of jours) html += `<div class="day day-header">${j}</div>`;
+                for (let i = 0; i < (firstDay === 0 ? 6 : firstDay - 1); i++) html += `<div class="day"></div>`;
+                for (let d = 1; d <= days; d++) {
+                    const dateObj = new Date(year, month, d);
+                    const hasEvent = events.some(e => new Date(e.date).toDateString() === dateObj.toDateString());
+                    html += `<div class="day day-number ${hasEvent?'has-event':''}">${d}</div>`;
+                }
+                html += '</div></div>';
+                container.innerHTML = html;
+            }
+        }
+
+        // --- Salles ---
+        function renderSalles() {
+            const data = getDataSync();
             const user = getCurrentUser();
             const isAdminUser = isAdmin();
             const salles = data.salles || [];
@@ -2501,9 +1786,9 @@
             document.getElementById('page-salles').innerHTML = html;
         }
 
-        // Absences
-        async function renderAbsences() {
-            const data = await getData();
+        // --- Absences ---
+        function renderAbsences() {
+            const data = getDataSync();
             const user = getCurrentUser();
             const isAdminUser = isAdmin();
             const absences = data.absences || [];
@@ -2563,9 +1848,9 @@
             document.getElementById('page-absences').innerHTML = html;
         }
 
-        // Sondages
-        async function renderSondages() {
-            const data = await getData();
+        // --- Sondages ---
+        function renderSondages() {
+            const data = getDataSync();
             const user = getCurrentUser();
             const isAdminUser = isAdmin();
             const sondages = data.sondages || [];
@@ -2621,9 +1906,9 @@
             document.getElementById('page-sondages').innerHTML = html;
         }
 
-        // Réunions
-        async function renderReunions() {
-            const data = await getData();
+        // --- Réunions ---
+        function renderReunions() {
+            const data = getDataSync();
             const user = getCurrentUser();
             const isAdminUser = isAdmin();
             const reunions = data.reunions || [];
@@ -2675,9 +1960,9 @@
             document.getElementById('page-reunions').innerHTML = html;
         }
 
-        // Alertes
-        async function renderAlertes() {
-            const data = await getData();
+        // --- Alertes ---
+        function renderAlertes() {
+            const data = getDataSync();
             const user = getCurrentUser();
             const alertes = data.alertes || [];
             let html = `
@@ -2687,7 +1972,7 @@
                 </div>
                 <div class="card">
                     ${alertes.filter(a => a.userId===user.id).sort((a,b)=>new Date(b.date)-new Date(a.date)).map(a => `
-                        <div class="alert-item" style="${a.lu ? 'opacity:0.6;' : 'border-left-color:var(--danger);'}">
+                        <div class="alert-item" style="${a.lu ? 'opacity:0.6;' : 'border-left-color:#e74c3c;'}">
                             <div style="display:flex; justify-content:space-between;">
                                 <strong>${a.titre}</strong>
                                 <span style="font-size:12px; color:var(--gray-500);">${new Date(a.date).toLocaleString()} ${a.heure?'à '+a.heure:''}</span>
@@ -2704,9 +1989,9 @@
             document.getElementById('page-alertes').innerHTML = html;
         }
 
-        // Notifications
-        async function renderNotifications() {
-            const data = await getData();
+        // --- Notifications ---
+        function renderNotifications() {
+            const data = getDataSync();
             const user = getCurrentUser();
             const notifs = (data.notifications || []).filter(n => n.userId === user.id).sort((a, b) => new Date(b.date) -
                 new Date(a.date));
@@ -2728,7 +2013,7 @@
             document.getElementById('page-notifications').innerHTML = html;
         }
 
-        // Recherche
+        // --- Recherche ---
         function renderRecherche() {
             let html = `
                 <div class="page-title">Recherche globale</div>
@@ -2741,11 +2026,11 @@
             document.getElementById('page-recherche').innerHTML = html;
         }
 
-        // Admin
-        async function renderAdmin() {
+        // --- Admin ---
+        function renderAdmin() {
             if (!isAdmin()) { document.getElementById('page-admin').innerHTML =
                     '<p class="text-muted">Accès réservé.</p>'; return; }
-            const data = await getData();
+            const data = getDataSync();
             const users = data.users || [];
             const logs = data.logs || [];
             let html = `
@@ -2799,9 +2084,9 @@
             document.getElementById('page-admin').innerHTML = html;
         }
 
-        // Statistiques
-        async function renderStatistiques() {
-            const data = await getData();
+        // --- Statistiques ---
+        function renderStatistiques() {
+            const data = getDataSync();
             const users = data.users || [];
             const docs = data.documents || [];
             const events = data.evenements || [];
@@ -2840,11 +2125,11 @@
             }, 100);
         }
 
-        // Paramètres
-        async function renderParametres() {
+        // --- Paramètres ---
+        function renderParametres() {
             if (!isAdmin()) { document.getElementById('page-parametres').innerHTML =
                     '<p class="text-muted">Accès réservé.</p>'; return; }
-            const data = await getData();
+            const data = getDataSync();
             const s = data.settings || {};
             let html = `
                 <div class="page-title">Paramètres</div>
@@ -2852,7 +2137,6 @@
                     <form id="settingsForm">
                         <div class="form-group"><label>Nom de la plateforme</label><input type="text" id="setPlatformName" value="${s.platformName||'ENT Collège'}"></div>
                         <div class="form-group"><label>Couleur principale (hex)</label><input type="color" id="setPrimaryColor" value="${s.primaryColor||'#4361ee'}"></div>
-                        <div class="form-group"><label>Logo (URL)</label><input type="text" id="setLogo" value="${s.logo||''}" placeholder="URL"></div>
                         <div class="form-group"><label>Délai session (secondes)</label><input type="number" id="setSessionTimeout" value="${(s.security&&s.security.sessionTimeout)||600}" min="60"></div>
                         <h4>Modules actifs</h4>
                         ${Object.keys(s.modules||{}).map(key => `
@@ -2878,7 +2162,6 @@
                 const data = await getData();
                 data.settings.platformName = document.getElementById('setPlatformName').value;
                 data.settings.primaryColor = document.getElementById('setPrimaryColor').value;
-                data.settings.logo = document.getElementById('setLogo').value;
                 data.settings.security.sessionTimeout = parseInt(document.getElementById('setSessionTimeout')
                     .value) || 600;
                 Object.keys(data.settings.modules).forEach(key => {
@@ -2892,11 +2175,11 @@
             });
         }
 
-        // Droits
-        async function renderDroits() {
+        // --- Droits ---
+        function renderDroits() {
             if (!isAdmin()) { document.getElementById('page-droits').innerHTML =
                     '<p class="text-muted">Accès réservé.</p>'; return; }
-            const data = await getData();
+            const data = getDataSync();
             const modules = Object.keys(data.settings.modules || {});
             const users = data.users || [];
             let html = `
@@ -2927,9 +2210,9 @@
             document.getElementById('page-droits').innerHTML = html;
         }
 
-        // Tableau de bord personnalisable (Module 13)
-        async function renderTableauDeBord() {
-            const data = await getData();
+        // --- Tableau de bord personnalisable ---
+        function renderTableauDeBord() {
+            const data = getDataSync();
             const user = getCurrentUser();
             const widgets = data.widgets.filter(w => w.userId === user.id);
             let html = `
@@ -2957,7 +2240,7 @@
                             content = `<div>${cal}</div>`;
                         } else if (w.type === 'notifications') {
                             const notifs = data.notifications.filter(n => n.userId === user.id).slice(0, w.config.nb || 5);
-                            content = notifs.map(n => `<div style="padding:4px 0; border-bottom:1px solid var(--gray-200);">${n.message}</div>`).join('') || '<p class="text-muted">Aucune notification</p>';
+                            content = notifs.map(n => `<div style="padding:4px 0; border-bottom:1px solid var(--gray-100);">${n.message}</div>`).join('') || '<p class="text-muted">Aucune notification</p>';
                         } else if (w.type === 'stats') {
                             const abs = data.absences.filter(a => a.userId === user.id).length;
                             const reserv = data.reservations.filter(r => r.userId === user.id).length;
@@ -3012,11 +2295,11 @@
                             } else {
                                 this.parentNode.insertBefore(dragEl, this);
                             }
+                            // Sauvegarder l'ordre (simulé)
                             const order = Array.from(parent.children).map(el => el.dataset.widgetId);
                             const data = getDataSync();
                             const widgets = data.widgets;
-                            const newOrder = order.map(id => widgets.find(w => w.id === id)).filter(
-                            Boolean);
+                            const newOrder = order.map(id => widgets.find(w => w.id === id)).filter(Boolean);
                             data.widgets = newOrder;
                             saveData(data);
                             addLog('Réorganisation des widgets');
@@ -3026,9 +2309,9 @@
             }
         }
 
-        // EDT
-        async function renderEDT() {
-            const data = await getData();
+        // --- EDT ---
+        function renderEDT() {
+            const data = getDataSync();
             const user = getCurrentUser();
             const edtEvents = data.edt_events || [];
             const userEvents = isAdmin() ? edtEvents : edtEvents.filter(e => e.userId === user.id);
@@ -3067,14 +2350,14 @@
             document.getElementById('page-edt').innerHTML = html;
         }
 
-        // Maintenance
-        async function renderMaintenance() {
+        // --- Maintenance ---
+        function renderMaintenance() {
             if (!isAdmin()) {
                 document.getElementById('page-maintenance').innerHTML =
                     '<p class="text-muted">Accès réservé aux administrateurs.</p>';
                 return;
             }
-            const data = await getData();
+            const data = getDataSync();
             const m = data.settings.maintenance || { active: false, message: 'La plateforme est en maintenance.' };
             let html = `
                 <div class="page-title">Mode maintenance</div>
@@ -3111,7 +2394,608 @@
         }
 
         // ================================================================
-        //  MODALES (GÉNÉRIQUES)
+        //  FONCTIONS GLOBALES (pour les onclick)
+        // ================================================================
+        // Documents
+        window.filterDocs = function() {
+            const s = document.getElementById('docSearch')?.value.toLowerCase() || '';
+            const c = document.getElementById('docCategoryFilter')?.value || '';
+            document.querySelectorAll('#docTableBody tr').forEach(row => {
+                const text = row.textContent.toLowerCase();
+                const cat = row.dataset.cat || '';
+                let show = true;
+                if (s && !text.includes(s)) show = false;
+                if (c && cat !== c) show = false;
+                row.style.display = show ? '' : 'none';
+            });
+        };
+        window.downloadDoc = function(id) {
+            const data = getDataSync();
+            const d = data.documents.find(d => d.id === id);
+            if (d) { alert(`Téléchargement de "${d.nom}" (simulé)`);
+                addLog('Téléchargement document', d.nom); }
+        };
+        window.deleteDocument = async function(id) {
+            if (!confirm('Supprimer ?')) return;
+            const data = await getData();
+            data.documents = data.documents.filter(d => d.id !== id);
+            await saveData(data);
+            await addLog('Suppression document', id);
+            renderDocuments();
+        };
+        window.editDocument = function(id) {
+            const data = getDataSync();
+            const d = data.documents.find(d => d.id === id);
+            if (d) openModal('documentForm', d);
+        };
+
+        // Inscriptions
+        window.sinscrire = async function(id) {
+            const data = await getData();
+            const user = getCurrentUser();
+            const evt = data.evenements.find(e => e.id === id);
+            if (!evt) return;
+            const inscrits = data.inscriptions.filter(i => i.evenementId === id);
+            if (evt.nbPlacesMax && inscrits.length >= evt.nbPlacesMax) { alert('Places épuisées.'); return; }
+            if (data.inscriptions.some(i => i.evenementId === id && i.userId === user.id)) { alert('Déjà inscrit.'); return; }
+            data.inscriptions.push({ id: generateId(), evenementId: id, userId: user.id, userNom: user.prenom + ' ' + user
+                    .nom, date: new Date().toISOString(), statut: 'En attente' });
+            await saveData(data);
+            await addLog('Inscription', evt.titre);
+            addNotification(user.id, `Inscrit à "${evt.titre}"`, 'success');
+            renderInscriptions();
+        };
+        window.desinscrire = async function(id) {
+            if (!confirm('Se désinscrire ?')) return;
+            const data = await getData();
+            const user = getCurrentUser();
+            data.inscriptions = data.inscriptions.filter(i => !(i.evenementId === id && i.userId === user.id));
+            await saveData(data);
+            await addLog('Désinscription', id);
+            renderInscriptions();
+        };
+        window.deleteEvenement = async function(id) {
+            if (!confirm('Supprimer ?')) return;
+            const data = await getData();
+            data.evenements = data.evenements.filter(e => e.id !== id);
+            data.inscriptions = data.inscriptions.filter(i => i.evenementId !== id);
+            await saveData(data);
+            await addLog('Suppression événement', id);
+            renderInscriptions();
+        };
+        window.editEvenement = function(id) {
+            const data = getDataSync();
+            const evt = data.evenements.find(e => e.id === id);
+            if (evt) openModal('evenementForm', evt);
+        };
+        window.toggleCloture = async function(id) {
+            const data = await getData();
+            const evt = data.evenements.find(e => e.id === id);
+            if (evt) { evt.cloture = !evt.cloture;
+                await saveData(data);
+                await addLog('Clôture/réouverture', evt.titre);
+                renderInscriptions(); }
+        };
+        window.exporterListe = function(id) {
+            const data = getDataSync();
+            const evt = data.evenements.find(e => e.id === id);
+            if (!evt) return;
+            const inscrits = data.inscriptions.filter(i => i.evenementId === id);
+            const csv = inscrits.map(i => i.userNom).join('\n');
+            const blob = new Blob([`Liste "${evt.titre}"\n${csv}`], { type: 'text/csv' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `inscrits_${evt.titre}.csv`;
+            a.click();
+            addLog('Export liste', evt.titre);
+        };
+
+        // Agenda
+        window.setAgendaView = function(view) {
+            setAgendaView(view);
+        };
+        window.deleteAgendaEvent = async function(id) {
+            if (!confirm('Supprimer ?')) return;
+            const data = await getData();
+            data.agenda_events = data.agenda_events.filter(e => e.id !== id);
+            await saveData(data);
+            await addLog('Suppression agenda', id);
+            renderAgenda();
+        };
+
+        // Salles
+        window.reserverSalle = async function(salleId) {
+            const data = await getData();
+            const user = getCurrentUser();
+            const date = prompt('Date (JJ/MM/AAAA) :');
+            if (!date) return;
+            const heure = prompt('Heure (HH:MM) :');
+            if (!heure) return;
+            const salle = data.salles.find(s => s.id === salleId);
+            if (salle && salle.disponible === false) { alert('Salle indisponible.'); return; }
+            if (data.reservations.some(r => r.salleId === salleId && r.date === date && r.heure === heure && r.statut !==
+                    'Refusée')) {
+                alert('Conflit détecté.');
+                return;
+            }
+            data.reservations.push({ id: generateId(), salleId, userId: user.id, date, heure, statut: 'En attente',
+                dateCreation: new Date().toISOString() });
+            await saveData(data);
+            await addLog('Réservation salle', salleId);
+            addNotification(user.id, `Demande de réservation ${salle.nom} le ${date} à ${heure}`, 'info');
+            renderSalles();
+        };
+        window.annulerReservation = async function(id) {
+            if (!confirm('Annuler ?')) return;
+            const data = await getData();
+            data.reservations = data.reservations.filter(r => r.id !== id);
+            await saveData(data);
+            await addLog('Annulation réservation', id);
+            renderSalles();
+        };
+        window.approuverReservation = async function(id) {
+            const data = await getData();
+            const r = data.reservations.find(r => r.id === id);
+            if (r) { r.statut = 'Approuvée';
+                await saveData(data);
+                await addLog('Approbation réservation', id);
+                addNotification(r.userId, 'Réservation approuvée', 'success');
+                renderSalles(); }
+        };
+        window.refuserReservation = async function(id) {
+            const data = await getData();
+            const r = data.reservations.find(r => r.id === id);
+            if (r) { r.statut = 'Refusée';
+                await saveData(data);
+                await addLog('Refus réservation', id);
+                addNotification(r.userId, 'Réservation refusée', 'danger');
+                renderSalles(); }
+        };
+        window.supprimerReservation = async function(id) {
+            if (!confirm('Supprimer ?')) return;
+            const data = await getData();
+            data.reservations = data.reservations.filter(r => r.id !== id);
+            await saveData(data);
+            await addLog('Suppression réservation', id);
+            renderSalles();
+        };
+        window.deleteSalle = async function(id) {
+            if (!confirm('Supprimer ?')) return;
+            const data = await getData();
+            data.salles = data.salles.filter(s => s.id !== id);
+            await saveData(data);
+            await addLog('Suppression salle', id);
+            renderSalles();
+        };
+        window.editSalle = function(id) {
+            const data = getDataSync();
+            const s = data.salles.find(s => s.id === id);
+            if (s) openModal('salleForm', s);
+        };
+        window.toggleDispoSalle = async function(id) {
+            const data = await getData();
+            const s = data.salles.find(s => s.id === id);
+            if (s) { s.disponible = s.disponible === false ? true : false;
+                await saveData(data);
+                await addLog('Toggle disponibilité', s.nom);
+                renderSalles(); }
+        };
+
+        // Absences
+        window.accepterAbsence = async function(id) {
+            const data = await getData();
+            const a = data.absences.find(a => a.id === id);
+            if (a) { a.statut = 'Acceptée';
+                await saveData(data);
+                await addLog('Acceptation absence', id);
+                addNotification(a.userId, 'Absence acceptée', 'success');
+                renderAbsences(); }
+        };
+        window.refuserAbsence = async function(id) {
+            const data = await getData();
+            const a = data.absences.find(a => a.id === id);
+            if (a) { a.statut = 'Refusée';
+                await saveData(data);
+                await addLog('Refus absence', id);
+                addNotification(a.userId, 'Absence refusée', 'danger');
+                renderAbsences(); }
+        };
+        window.supprimerAbsence = async function(id) {
+            if (!confirm('Supprimer ?')) return;
+            const data = await getData();
+            data.absences = data.absences.filter(a => a.id !== id);
+            await saveData(data);
+            await addLog('Suppression absence', id);
+            renderAbsences();
+        };
+
+        // Sondages
+        window.voterSondage = function(sondageId) {
+            const data = getDataSync();
+            const user = getCurrentUser();
+            const s = data.sondages.find(s => s.id === sondageId);
+            if (!s || s.cloture || new Date(s.dateFin) < new Date()) { alert('Sondage clôturé.'); return; }
+            if (s.votes.some(v => v.userId === user.id)) { alert('Déjà voté.'); return; }
+            const body = document.getElementById('modalBody');
+            let html = `<h2>Voter : ${s.titre}</h2><form id="voteForm">`;
+            s.questions.forEach((q, idx) => {
+                html += `<div class="form-group"><label>${q.texte}</label>`;
+                q.options.forEach((opt, oi) => {
+                    html += `<div><input type="radio" name="q${idx}" value="${oi}" required> ${opt}</div>`;
+                });
+                html += `</div>`;
+            });
+            html += `<button type="submit" class="btn btn-primary btn-block">Envoyer</button></form>`;
+            body.innerHTML = html;
+            document.getElementById('modalOverlay').classList.add('active');
+            document.getElementById('voteForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const reponses = {};
+                s.questions.forEach((q, idx) => {
+                    const val = document.querySelector(`input[name="q${idx}"]:checked`);
+                    if (val) reponses[idx] = parseInt(val.value);
+                });
+                if (Object.keys(reponses).length !== s.questions.length) { alert('Répondez à tout.'); return; }
+                const data = await getData();
+                const s2 = data.sondages.find(s => s.id === sondageId);
+                if (!s2) return;
+                s2.votes.push({ userId: user.id, reponses, date: new Date().toISOString() });
+                await saveData(data);
+                await addLog('Vote sondage', s2.titre);
+                addNotification(user.id, `Vote dans "${s2.titre}"`, 'success');
+                closeModal();
+                renderSondages();
+            });
+        };
+        window.deleteSondage = async function(id) {
+            if (!confirm('Supprimer ?')) return;
+            const data = await getData();
+            data.sondages = data.sondages.filter(s => s.id !== id);
+            await saveData(data);
+            await addLog('Suppression sondage', id);
+            renderSondages();
+        };
+        window.editSondage = function(id) {
+            const data = getDataSync();
+            const s = data.sondages.find(s => s.id === id);
+            if (s) openModal('sondageForm', s);
+        };
+        window.toggleClotureSondage = async function(id) {
+            const data = await getData();
+            const s = data.sondages.find(s => s.id === id);
+            if (s) { s.cloture = !s.cloture;
+                await saveData(data);
+                await addLog('Toggle clôture sondage', s.titre);
+                renderSondages(); }
+        };
+
+        // Réunions
+        window.voterReunion = function(reunionId) {
+            const data = getDataSync();
+            const user = getCurrentUser();
+            const r = data.reunions.find(r => r.id === reunionId);
+            if (!r || r.statut === 'cloture' || new Date(r.dateLimite) < new Date()) { alert('Réunion clôturée.'); return; }
+            if (r.votes.some(v => v.userId === user.id)) { alert('Déjà voté.'); return; }
+            const body = document.getElementById('modalBody');
+            let html = `<h2>Voter - ${r.titre}</h2><form id="voteReunionForm">`;
+            r.creneaux.forEach((c, idx) => {
+                html +=
+                    `<div><input type="radio" name="creneau" value="${idx}" required> ${new Date(c.date).toLocaleDateString()} ${c.heure} (${c.duree} min)</div>`;
+            });
+            html += `<button type="submit" class="btn btn-primary btn-block">Voter</button></form>`;
+            body.innerHTML = html;
+            document.getElementById('modalOverlay').classList.add('active');
+            document.getElementById('voteReunionForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const val = document.querySelector('input[name="creneau"]:checked');
+                if (!val) { alert('Choisissez un créneau.'); return; }
+                const idx = parseInt(val.value);
+                const data = await getData();
+                const r2 = data.reunions.find(r => r.id === reunionId);
+                if (!r2) return;
+                r2.votes.push({ userId: user.id, creneauIndex: idx });
+                await saveData(data);
+                await addLog('Vote réunion', r2.titre);
+                addNotification(user.id, `Vote pour "${r2.titre}"`, 'success');
+                closeModal();
+                renderReunions();
+            });
+        };
+        window.cloturerReunion = async function(id) {
+            const data = await getData();
+            const r = data.reunions.find(r => r.id === id);
+            if (r) { r.statut = r.statut === 'cloture' ? 'ouverte' : 'cloture';
+                await saveData(data);
+                await addLog('Toggle clôture réunion', r.titre);
+                renderReunions(); }
+        };
+        window.finaliserReunion = async function(id) {
+            const data = await getData();
+            const r = data.reunions.find(r => r.id === id);
+            if (!r || r.creneaux.length === 0) { alert('Aucun créneau.'); return; }
+            const counts = r.creneaux.map((_, idx) => r.votes.filter(v => v.creneauIndex === idx).length);
+            const max = Math.max(...counts);
+            const gagneIdx = counts.indexOf(max);
+            r.creneauGagne = gagneIdx;
+            r.statut = 'cloture';
+            const creneau = r.creneaux[gagneIdx];
+            data.agenda_events.push({ id: generateId(), titre: 'Réunion: ' + r.titre, date: creneau.date,
+                heure: creneau.heure, lieu: 'Salle à définir', couleur: '#4361ee' });
+            await saveData(data);
+            await addLog('Finalisation réunion', r.titre);
+            addNotification(r.id, `Réunion "${r.titre}" planifiée le ${new Date(creneau.date).toLocaleDateString()} à ${creneau.heure}`,
+                'success');
+            renderReunions();
+            renderAgenda();
+        };
+        window.deleteReunion = async function(id) {
+            if (!confirm('Supprimer ?')) return;
+            const data = await getData();
+            data.reunions = data.reunions.filter(r => r.id !== id);
+            await saveData(data);
+            await addLog('Suppression réunion', id);
+            renderReunions();
+        };
+        window.editReunion = function(id) {
+            const data = getDataSync();
+            const r = data.reunions.find(r => r.id === id);
+            if (r) openModal('reunionForm', r);
+        };
+
+        // Alertes
+        window.marquerAlerteLu = async function(id) {
+            const data = await getData();
+            const a = data.alertes.find(a => a.id === id);
+            if (a) { a.lu = true;
+                await saveData(data);
+                renderAlertes(); }
+        };
+        window.supprimerAlerte = async function(id) {
+            if (!confirm('Supprimer ?')) return;
+            const data = await getData();
+            data.alertes = data.alertes.filter(a => a.id !== id);
+            await saveData(data);
+            renderAlertes();
+        };
+
+        // Notifications
+        window.marquerLu = async function(id) {
+            const data = await getData();
+            const n = data.notifications.find(n => n.id === id);
+            if (n) { n.read = true;
+                await saveData(data);
+                renderNotifications();
+                updateNotifBadge(); }
+        };
+        window.marquerToutLu = async function() {
+            const data = await getData();
+            const user = getCurrentUser();
+            data.notifications.forEach(n => { if (n.userId === user.id) n.read = true; });
+            await saveData(data);
+            renderNotifications();
+            updateNotifBadge();
+        };
+
+        // Recherche
+        window.globalSearch = function() {
+            const q = document.getElementById('globalSearch').value.toLowerCase().trim();
+            const container = document.getElementById('searchResults');
+            if (!q) { container.innerHTML = '<p class="text-muted">Saisissez un terme.</p>'; return; }
+            const data = getDataSync();
+            const results = [];
+            (data.users || []).forEach(u => { if ((u.nom + u.prenom + u.email).toLowerCase().includes(q)) results.push({
+                    type: 'Utilisateur',
+                    label: u.prenom + ' ' + u.nom + ' (' + u.email + ')'
+                }); });
+            (data.salles || []).forEach(s => { if ((s.nom + s.batiment + s.equipements).toLowerCase().includes(q))
+                    results.push({ type: 'Salle', label: s.nom }); });
+            (data.documents || []).forEach(d => { if (d.nom.toLowerCase().includes(q)) results.push({ type: 'Document',
+                    label: d.nom }); });
+            (data.evenements || []).forEach(e => { if ((e.titre + e.description).toLowerCase().includes(q)) results
+                    .push({ type: 'Événement', label: e.titre }); });
+            (data.absences || []).forEach(a => { if ((a.motif + a.commentaire).toLowerCase().includes(q)) { const u =
+                        data.users.find(u => u.id === a.userId);
+                    results.push({ type: 'Absence', label: (u ? u.prenom + ' ' + u.nom : '') + ' - ' + a.motif }); } });
+            (data.sondages || []).forEach(s => { if ((s.titre + s.description).toLowerCase().includes(q)) results.push({
+                    type: 'Sondage',
+                    label: s.titre
+                }); });
+            container.innerHTML = results.length ? results.map(r =>
+                `<div style="padding:6px 0; border-bottom:1px solid var(--gray-100);"><strong>${r.type}</strong> : ${r.label}</div>`
+                ).join('') : '<p class="text-muted">Aucun résultat.</p>';
+        };
+
+        // Admin
+        window.editUser = function(id) {
+            const data = getDataSync();
+            const u = data.users.find(u => u.id === id);
+            if (u) openModal('userForm', u);
+        };
+        window.deleteUser = async function(id) {
+            if (!confirm('Supprimer ?')) return;
+            const data = await getData();
+            if (data.users.filter(u => u.role === 'admin').length <= 1 && data.users.find(u => u.id === id)?.role ===
+                'admin') {
+                alert('Impossible de supprimer le dernier admin.');
+                return;
+            }
+            data.users = data.users.filter(u => u.id !== id);
+            await saveData(data);
+            await addLog('Suppression utilisateur', id);
+            renderAdmin();
+        };
+        window.toggleUserActive = async function(id) {
+            const data = await getData();
+            const u = data.users.find(u => u.id === id);
+            if (u) { u.active = !u.active;
+                await saveData(data);
+                await addLog('Toggle actif', u.email);
+                renderAdmin(); }
+        };
+        window.resetPassword = async function(id) {
+            const data = await getData();
+            const u = data.users.find(u => u.id === id);
+            if (!u) return;
+            const pwd = prompt('Nouveau mot de passe pour ' + u.email + ' :');
+            if (pwd && pwd.length >= 6) { u.password = pwd;
+                await saveData(data);
+                await addLog('Reset password', u.email);
+                alert('Mot de passe mis à jour.');
+                renderAdmin(); } else alert('Minimum 6 caractères.');
+        };
+
+        // Widgets
+        window.ajouterWidget = function() {
+            const data = getDataSync();
+            const user = getCurrentUser();
+            const types = [
+                { value: 'agenda', label: 'Agenda' },
+                { value: 'notifications', label: 'Notifications' },
+                { value: 'stats', label: 'Mes statistiques' }
+            ];
+            const body = document.getElementById('modalBody');
+            let html = `
+                <h2>Ajouter un widget</h2>
+                <form id="widgetForm">
+                    <div class="form-group">
+                        <label>Type</label>
+                        <select id="widgetType">
+                            ${types.map(t => `<option value="${t.value}">${t.label}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Titre</label>
+                        <input type="text" id="widgetTitre" placeholder="Titre du widget" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Ajouter</button>
+                </form>
+            `;
+            body.innerHTML = html;
+            document.getElementById('modalOverlay').classList.add('active');
+            document.getElementById('widgetForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const type = document.getElementById('widgetType').value;
+                const titre = document.getElementById('widgetTitre').value;
+                const config = { titre };
+                if (type === 'notifications') config.nb = 5;
+                const data = await getData();
+                data.widgets.push({ id: generateId(), userId: user.id, type, config });
+                await saveData(data);
+                await addLog('Ajout widget', type);
+                closeModal();
+                renderTableauDeBord();
+            });
+        };
+        window.supprimerWidget = async function(id) {
+            if (!confirm('Supprimer ce widget ?')) return;
+            const data = await getData();
+            data.widgets = data.widgets.filter(w => w.id !== id);
+            await saveData(data);
+            await addLog('Suppression widget', id);
+            renderTableauDeBord();
+        };
+
+        // EDT
+        window.importerICS = async function() {
+            const data = await getData();
+            const user = getCurrentUser();
+            const now = new Date();
+            for (let i = 0; i < 5; i++) {
+                const d = new Date(now);
+                d.setDate(d.getDate() + i + 1);
+                data.edt_events.push({
+                    id: generateId(),
+                    userId: user.id,
+                    titre: `Cours ${['Maths','Français','Histoire','SVT','Anglais'][i % 5]}`,
+                    date: d.toISOString().split('T')[0],
+                    heure: `${8 + i}:00`,
+                    lieu: `Salle ${100 + i}`,
+                    source: 'ics_import'
+                });
+            }
+            await saveData(data);
+            await addLog('Import ICS', '5 événements simulés');
+            alert('Import ICS simulé : 5 événements ajoutés.');
+            renderEDT();
+        };
+        window.supprimerEDTEvent = async function(id) {
+            if (!confirm('Supprimer cet événement ?')) return;
+            const data = await getData();
+            data.edt_events = data.edt_events.filter(e => e.id !== id);
+            await saveData(data);
+            await addLog('Suppression événement EDT', id);
+            renderEDT();
+        };
+
+        // Paramètres
+        window.exporterDonnees = function() {
+            const data = getDataSync();
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'ent_data_backup.json';
+            a.click();
+            addLog('Export données');
+        };
+        window.importerFichier = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    await saveData(data);
+                    alert('Importé. Rechargement...');
+                    location.reload();
+                } catch (err) {
+                    alert('Fichier invalide.');
+                }
+            };
+            reader.readAsText(file);
+        };
+        window.reinitialiserPlateforme = async function() {
+            if (!confirm('Tout supprimer ? Irréversible.')) return;
+            const defaultData = getDefaultData();
+            await saveData(defaultData);
+            alert('Réinitialisé.');
+            location.reload();
+        };
+
+        // Droits
+        window.editDroits = function(userId, module) {
+            const data = getDataSync();
+            const user = data.users.find(u => u.id === userId);
+            if (!user) return;
+            if (!user.permissions) user.permissions = {};
+            const p = user.permissions[module] || { read: false, write: false, delete: false };
+            const body = document.getElementById('modalBody');
+            body.innerHTML = `
+                <h2>Droits pour ${user.prenom} ${user.nom} - ${module}</h2>
+                <form id="droitsForm">
+                    <div><input type="checkbox" id="dRead" ${p.read?'checked':''}> <label for="dRead">Lecture</label></div>
+                    <div><input type="checkbox" id="dWrite" ${p.write?'checked':''}> <label for="dWrite">Écriture</label></div>
+                    <div><input type="checkbox" id="dDelete" ${p.delete?'checked':''}> <label for="dDelete">Suppression</label></div>
+                    <button type="submit" class="btn btn-primary btn-block">Enregistrer</button>
+                </form>
+            `;
+            document.getElementById('modalOverlay').classList.add('active');
+            document.getElementById('droitsForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const data = await getData();
+                const user2 = data.users.find(u => u.id === userId);
+                if (!user2) return;
+                user2.permissions[module] = { read: document.getElementById('dRead').checked, write: document
+                        .getElementById('dWrite').checked, delete: document.getElementById('dDelete')
+                        .checked };
+                await saveData(data);
+                await addLog('Modification droits', user2.email + ' - ' + module);
+                closeModal();
+                renderDroits();
+            });
+        };
+
+        // ================================================================
+        //  MODALES
         // ================================================================
         function openModal(type, dataObj = null) {
             const overlay = document.getElementById('modalOverlay');
@@ -3454,7 +3338,7 @@
         });
 
         // ================================================================
-        //  TOUCHE DE SECOURS (Ctrl+Alt+D)
+        //  TOUCHE DE SECOURS
         // ================================================================
         function emergencyUnlock() {
             localStorage.setItem('ent_session', JSON.stringify({ userId: 'u1', expiry: Date.now() + 3600000 }));
@@ -3490,10 +3374,11 @@
         //  INIT
         // ================================================================
         (async function() {
-            await initData();
+            // Forcer les données par défaut si vide
+            const data = getDataSync();
+            // Démarrer l'application
             const session = JSON.parse(localStorage.getItem('ent_session') || 'null');
             if (session) {
-                const data = await getData();
                 const user = data.users.find(u => u.id === session.userId);
                 if (user && user.active !== false && session.expiry && Date.now() < session.expiry) {
                     render();
@@ -3512,37 +3397,10 @@
                 document.getElementById('sidebar').classList.toggle('open');
             });
 
-            console.log('✅ ENT Collège avec Firestore (synchronisation temps réel) prêt.');
+            console.log('✅ ENT Collège prêt (mode local).');
             console.log('📌 Admin: admin@college.fr / Admin123!');
             console.log('🔑 Secours: Ctrl+Alt+D ou bouton en bas à droite');
         })();
-
-        // Fonction d'initialisation (déjà déclarée plus haut mais on la garde)
-        async function initData() {
-            const data = await loadDataAsync();
-            const defaultData = getDefaultData();
-            for (let key in defaultData) {
-                if (!data.hasOwnProperty(key) || !Array.isArray(data[key])) {
-                    data[key] = defaultData[key];
-                }
-            }
-            if (!data.settings) data.settings = defaultData.settings;
-            if (!data.settings.modules) data.settings.modules = defaultData.settings.modules;
-            if (!data.settings.security) data.settings.security = defaultData.settings.security;
-            if (!data.settings.maintenance) data.settings.maintenance = defaultData.settings.maintenance;
-            const admin = data.users.find(u => u.role === 'admin');
-            if (admin) {
-                const modules = Object.keys(data.settings.modules);
-                modules.forEach(m => {
-                    if (!admin.permissions) admin.permissions = {};
-                    if (!admin.permissions[m]) admin.permissions[m] = { read: true, write: true,
-                    delete: true };
-                });
-            }
-            await saveData(data);
-            currentData = data;
-            window._cachedData = data;
-        }
     </script>
 </body>
 </html>
