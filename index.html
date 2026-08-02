@@ -4,14 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>ENT Collège - Plateforme Enseignants</title>
-    <!-- Firebase SDK (compat) -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <!-- Firebase SDK (compat pour script) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js">
+    </script>
     <!-- Font Awesome & Chart.js -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
+    </script>
     <style>
-        /* ===== CSS COMPLET (identique à la version précédente) ===== */
+        /* --- CSS complet --- */
         :root {
             --primary: #4361ee;
             --primary-light: #6c8cff;
@@ -34,10 +37,14 @@
             --sidebar-width: 260px;
             --header-height: 64px;
             --border-radius: 16px;
-            --box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
             --transition: all 0.25s ease;
         }
-        * { margin:0; padding:0; box-sizing:border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             background: var(--gray-50);
@@ -46,161 +53,878 @@
             height: 100vh;
             overflow: hidden;
         }
-        #loginPage { display:none; position:fixed; inset:0; background:linear-gradient(145deg,#eef2ff,#e0e7ff); justify-content:center; align-items:center; z-index:9999; }
-        #loginPage.active { display:flex; }
-        .login-card { background:#fff; padding:40px 32px; border-radius:var(--border-radius); box-shadow:0 25px 60px rgba(67,97,238,0.15); width:100%; max-width:400px; }
-        .login-card h1 { font-size:28px; font-weight:700; color:var(--primary); text-align:center; margin-bottom:6px; }
-        .login-card p { text-align:center; color:var(--gray-500); margin-bottom:24px; font-size:15px; }
-        .login-card label { font-weight:600; display:block; font-size:14px; margin-top:16px; margin-bottom:4px; color:var(--gray-700); }
-        .login-card input { width:100%; padding:12px 16px; border:1.5px solid var(--gray-200); border-radius:10px; font-size:15px; background:var(--gray-50); transition:var(--transition); }
-        .login-card input:focus { border-color:var(--primary); outline:none; background:#fff; box-shadow:0 0 0 3px rgba(67,97,238,0.12); }
-        .login-card button { width:100%; padding:14px; background:var(--primary); color:#fff; border:none; border-radius:10px; font-size:16px; font-weight:600; margin-top:22px; cursor:pointer; transition:var(--transition); box-shadow:0 4px 12px rgba(67,97,238,0.3); }
-        .login-card button:hover { background:var(--primary-dark); transform:translateY(-1px); }
-        .login-error { color:var(--danger); font-size:14px; margin-top:12px; text-align:center; }
-        #sidebar { width:var(--sidebar-width); background:#fff; border-right:1px solid var(--gray-200); display:flex; flex-direction:column; height:100vh; position:fixed; top:0; left:0; z-index:1000; transition:var(--transition); overflow-y:auto; }
-        #sidebar .brand { display:flex; align-items:center; gap:12px; padding:20px 20px 14px; font-size:20px; font-weight:700; color:var(--primary); border-bottom:1px solid var(--gray-200); }
-        #sidebar .brand i { font-size:26px; }
-        #sidebar .user-info { padding:16px 20px; border-bottom:1px solid var(--gray-200); display:flex; align-items:center; gap:14px; }
-        #sidebar .user-info .avatar { width:44px; height:44px; border-radius:12px; background:var(--primary-light); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:18px; flex-shrink:0; }
-        #sidebar .user-info .name { font-weight:600; font-size:15px; }
-        #sidebar .user-info .role { font-size:12px; color:var(--gray-500); }
-        #sidebar .menu { flex:1; padding:10px 0 20px; }
-        #sidebar .menu .menu-item { display:flex; align-items:center; gap:14px; padding:12px 20px; color:var(--gray-600); font-size:15px; cursor:pointer; transition:var(--transition); border-left:3px solid transparent; font-weight:500; }
-        #sidebar .menu .menu-item:hover { background:var(--gray-100); color:var(--primary); }
-        #sidebar .menu .menu-item.active { background:rgba(67,97,238,0.08); color:var(--primary); border-left-color:var(--primary); font-weight:600; }
-        #sidebar .menu .menu-item i { width:22px; text-align:center; font-size:17px; }
-        #sidebar .menu .menu-item .badge { margin-left:auto; background:var(--secondary); color:#fff; font-size:11px; padding:2px 8px; border-radius:20px; }
-        #sidebar .logout-btn { padding:16px 20px; border-top:1px solid var(--gray-200); color:var(--danger); font-weight:600; cursor:pointer; display:flex; align-items:center; gap:12px; transition:var(--transition); }
-        #sidebar .logout-btn:hover { background:#fef2f2; }
-        #main { margin-left:var(--sidebar-width); flex:1; display:flex; flex-direction:column; height:100vh; overflow:hidden; }
-        #header { height:var(--header-height); background:#fff; border-bottom:1px solid var(--gray-200); display:flex; align-items:center; justify-content:space-between; padding:0 24px; flex-shrink:0; }
-        #header .left { display:flex; align-items:center; gap:16px; }
-        #header .left .toggle-sidebar { display:none; background:none; border:none; font-size:22px; cursor:pointer; color:var(--gray-600); padding:4px 8px; }
-        #header .left .page-title { font-size:20px; font-weight:700; color:var(--gray-800); }
-        #header .right { display:flex; align-items:center; gap:20px; }
-        #header .right .notification-bell { position:relative; cursor:pointer; font-size:20px; color:var(--gray-600); transition:var(--transition); }
-        #header .right .notification-bell:hover { color:var(--primary); }
-        #header .right .notification-bell .count { position:absolute; top:-6px; right:-8px; background:var(--secondary); color:#fff; font-size:11px; border-radius:30px; padding:1px 7px; min-width:20px; text-align:center; font-weight:600; }
-        #header .right .user-menu { display:flex; align-items:center; gap:10px; cursor:pointer; padding:6px 12px 6px 8px; border-radius:30px; transition:var(--transition); }
-        #header .right .user-menu:hover { background:var(--gray-100); }
-        #header .right .user-menu .avatar-sm { width:34px; height:34px; border-radius:10px; background:var(--primary-light); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:14px; }
-        #header .right .user-menu span { font-weight:500; font-size:14px; color:var(--gray-700); }
-        #content { flex:1; padding:24px 28px; overflow-y:auto; background:var(--gray-50); }
-        .page-section { display:none; animation:fadeUp 0.3s ease; }
-        .page-section.active { display:block; }
-        @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
-        .page-title { font-size:24px; font-weight:700; margin-bottom:4px; color:var(--gray-900); }
-        .page-subtitle { color:var(--gray-500); margin-bottom:24px; font-size:15px; }
-        .card { background:#fff; border-radius:var(--border-radius); box-shadow:var(--box-shadow); padding:20px 22px; margin-bottom:20px; transition:var(--transition); border:1px solid var(--gray-100); }
-        .card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; font-weight:600; font-size:18px; color:var(--gray-800); }
-        .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
-        .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
-        .grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
-        .stat-card { background:#fff; border-radius:var(--border-radius); padding:18px 20px; box-shadow:var(--box-shadow); border:1px solid var(--gray-100); display:flex; align-items:center; gap:16px; }
-        .stat-card .icon { width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:22px; color:#fff; flex-shrink:0; }
-        .stat-card .icon.blue { background:var(--primary); }
-        .stat-card .icon.green { background:var(--success); }
-        .stat-card .icon.orange { background:var(--warning); }
-        .stat-card .icon.red { background:var(--danger); }
-        .stat-card .icon.purple { background:#8b5cf6; }
-        .stat-card .icon.pink { background:var(--secondary); }
-        .stat-card .info h3 { font-size:26px; font-weight:700; line-height:1.2; }
-        .stat-card .info span { color:var(--gray-500); font-size:14px; }
-        .btn { padding:8px 18px; border-radius:10px; border:none; font-weight:600; font-size:14px; cursor:pointer; transition:var(--transition); display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
-        .btn-primary { background:var(--primary); color:#fff; box-shadow:0 2px 8px rgba(67,97,238,0.25); }
-        .btn-primary:hover { background:var(--primary-dark); transform:translateY(-1px); }
-        .btn-success { background:var(--success); color:#fff; }
-        .btn-success:hover { background:#388e3c; }
-        .btn-danger { background:var(--danger); color:#fff; }
-        .btn-danger:hover { background:#c62828; }
-        .btn-warning { background:var(--warning); color:#212529; }
-        .btn-warning:hover { background:#f57f17; }
-        .btn-outline { background:transparent; border:1.5px solid var(--gray-300); color:var(--gray-700); }
-        .btn-outline:hover { background:var(--gray-100); }
-        .btn-sm { padding:5px 12px; font-size:12px; border-radius:8px; }
-        .btn-block { width:100%; justify-content:center; }
-        .form-group { margin-bottom:16px; }
-        .form-group label { display:block; font-weight:600; font-size:14px; margin-bottom:4px; color:var(--gray-700); }
-        .form-group input, .form-group select, .form-group textarea { width:100%; padding:10px 14px; border:1.5px solid var(--gray-200); border-radius:10px; font-size:14px; background:var(--gray-50); transition:var(--transition); }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color:var(--primary); outline:none; background:#fff; box-shadow:0 0 0 3px rgba(67,97,238,0.12); }
-        .form-group textarea { min-height:80px; resize:vertical; }
-        .table-responsive { overflow-x:auto; -webkit-overflow-scrolling:touch; }
-        table { width:100%; border-collapse:collapse; font-size:14px; }
-        table th { text-align:left; padding:12px 10px; background:var(--gray-50); font-weight:600; color:var(--gray-600); border-bottom:2px solid var(--gray-200); }
-        table td { padding:12px 10px; border-bottom:1px solid var(--gray-100); }
-        table tr:hover td { background:var(--gray-50); }
-        .badge-status { display:inline-block; padding:4px 14px; border-radius:30px; font-size:12px; font-weight:600; }
-        .badge-status.pending { background:#fff3cd; color:#856404; }
-        .badge-status.accepted { background:#d4edda; color:#155724; }
-        .badge-status.refused { background:#f8d7da; color:#721c24; }
-        .badge-status.active { background:#d1ecf1; color:#0c5460; }
-        .badge-status.inactive { background:#e2e3e5; color:#383d41; }
-        .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.35); backdrop-filter:blur(4px); display:none; justify-content:center; align-items:center; z-index:9999; padding:16px; }
-        .modal-overlay.active { display:flex; }
-        .modal { background:#fff; border-radius:var(--border-radius); max-width:680px; width:100%; max-height:90vh; overflow-y:auto; padding:28px 30px; box-shadow:0 30px 80px rgba(0,0,0,0.2); animation:fadeUp 0.25s ease; }
-        .modal h2 { margin-bottom:20px; font-size:22px; }
-        .modal .close-modal { float:right; background:none; border:none; font-size:24px; cursor:pointer; color:var(--gray-400); transition:var(--transition); }
-        .modal .close-modal:hover { color:var(--gray-700); }
-        .calendar-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
-        .calendar-grid .day { padding:8px 4px; text-align:center; border-radius:8px; background:var(--gray-50); font-size:14px; }
-        .calendar-grid .day-header { font-weight:600; background:transparent; color:var(--gray-500); }
-        .calendar-grid .day-number { font-weight:500; cursor:pointer; transition:var(--transition); }
-        .calendar-grid .day-number:hover { background:var(--primary-light); color:#fff; }
-        .calendar-grid .day-number.has-event { background:var(--primary); color:#fff; }
-        .search-box { display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
-        .search-box input, .search-box select { flex:1; padding:10px 16px; border:1.5px solid var(--gray-200); border-radius:10px; font-size:14px; background:var(--gray-50); min-width:140px; }
-        .search-box input:focus, .search-box select:focus { border-color:var(--primary); outline:none; }
-        .search-box button { padding:10px 22px; }
-        .tabs { display:flex; gap:4px; border-bottom:2px solid var(--gray-200); margin-bottom:20px; flex-wrap:wrap; }
-        .tabs .tab { padding:10px 22px; cursor:pointer; font-weight:600; color:var(--gray-500); border-bottom:3px solid transparent; transition:var(--transition); font-size:14px; }
-        .tabs .tab.active { color:var(--primary); border-bottom-color:var(--primary); }
-        .tabs .tab:hover { color:var(--primary); }
-        .vote-bar { height:18px; background:var(--gray-200); border-radius:20px; overflow:hidden; margin:4px 0; }
-        .vote-bar-inner { height:100%; background:var(--primary); transition:width 0.3s; }
-        .alert-item { border-left:4px solid var(--warning); padding:10px 14px; margin:6px 0; background:var(--gray-50); border-radius:8px; }
-        .reunion-creneau { border:1px solid var(--gray-200); border-radius:10px; padding:10px; margin:6px 0; cursor:pointer; transition:var(--transition); }
-        .reunion-creneau:hover { background:var(--gray-50); }
-        .reunion-creneau.selected { border-color:var(--success); background:#e8f5e9; }
-        .permission-badge { display:inline-block; padding:2px 10px; border-radius:20px; font-size:11px; font-weight:600; margin:2px; }
-        .perm-read { background:#d4edda; color:#155724; }
-        .perm-write { background:#cce5ff; color:#004085; }
-        .perm-delete { background:#f8d7da; color:#721c24; }
-        .perm-none { background:#e2e3e5; color:#383d41; }
-        .widget { border:2px dashed var(--gray-300); border-radius:var(--border-radius); padding:16px; background:#fff; transition:var(--transition); cursor:grab; }
-        .widget:hover { border-color:var(--primary); }
-        .widget .widget-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-weight:600; }
-        .widget .widget-header .drag-handle { cursor:grab; color:var(--gray-400); }
-        .widget .widget-header .remove-widget { cursor:pointer; color:var(--danger); }
-        .widgets-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:20px; }
-        .maintenance-banner { background:var(--warning); color:#212529; padding:12px 20px; text-align:center; font-weight:600; border-radius:var(--border-radius); margin-bottom:20px; }
-        @media (max-width:1024px) { .grid-4 { grid-template-columns:1fr 1fr; } }
+        #loginPage {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(145deg, #eef2ff, #e0e7ff);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        #loginPage.active {
+            display: flex;
+        }
+        .login-card {
+            background: #fff;
+            padding: 40px 32px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 25px 60px rgba(67, 97, 238, 0.15);
+            width: 100%;
+            max-width: 400px;
+        }
+        .login-card h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 6px;
+        }
+        .login-card p {
+            text-align: center;
+            color: var(--gray-500);
+            margin-bottom: 24px;
+            font-size: 15px;
+        }
+        .login-card label {
+            font-weight: 600;
+            display: block;
+            font-size: 14px;
+            margin-top: 16px;
+            margin-bottom: 4px;
+            color: var(--gray-700);
+        }
+        .login-card input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid var(--gray-200);
+            border-radius: 10px;
+            font-size: 15px;
+            background: var(--gray-50);
+            transition: var(--transition);
+        }
+        .login-card input:focus {
+            border-color: var(--primary);
+            outline: none;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.12);
+        }
+        .login-card button {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 22px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+        }
+        .login-card button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+        .login-error {
+            color: var(--danger);
+            font-size: 14px;
+            margin-top: 12px;
+            text-align: center;
+        }
+        #sidebar {
+            width: var(--sidebar-width);
+            background: #fff;
+            border-right: 1px solid var(--gray-200);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            transition: var(--transition);
+            overflow-y: auto;
+        }
+        #sidebar .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 20px 20px 14px;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            border-bottom: 1px solid var(--gray-200);
+        }
+        #sidebar .brand i {
+            font-size: 26px;
+        }
+        #sidebar .user-info {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        #sidebar .user-info .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: var(--primary-light);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        #sidebar .user-info .name {
+            font-weight: 600;
+            font-size: 15px;
+        }
+        #sidebar .user-info .role {
+            font-size: 12px;
+            color: var(--gray-500);
+        }
+        #sidebar .menu {
+            flex: 1;
+            padding: 10px 0 20px;
+        }
+        #sidebar .menu .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 20px;
+            color: var(--gray-600);
+            font-size: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+            font-weight: 500;
+        }
+        #sidebar .menu .menu-item:hover {
+            background: var(--gray-100);
+            color: var(--primary);
+        }
+        #sidebar .menu .menu-item.active {
+            background: rgba(67, 97, 238, 0.08);
+            color: var(--primary);
+            border-left-color: var(--primary);
+            font-weight: 600;
+        }
+        #sidebar .menu .menu-item i {
+            width: 22px;
+            text-align: center;
+            font-size: 17px;
+        }
+        #sidebar .menu .menu-item .badge {
+            margin-left: auto;
+            background: var(--secondary);
+            color: #fff;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 20px;
+        }
+        #sidebar .logout-btn {
+            padding: 16px 20px;
+            border-top: 1px solid var(--gray-200);
+            color: var(--danger);
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: var(--transition);
+        }
+        #sidebar .logout-btn:hover {
+            background: #fef2f2;
+        }
+        #main {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+        #header {
+            height: var(--header-height);
+            background: #fff;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            flex-shrink: 0;
+        }
+        #header .left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        #header .left .toggle-sidebar {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: var(--gray-600);
+            padding: 4px 8px;
+        }
+        #header .left .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gray-800);
+        }
+        #header .right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        #header .right .notification-bell {
+            position: relative;
+            cursor: pointer;
+            font-size: 20px;
+            color: var(--gray-600);
+            transition: var(--transition);
+        }
+        #header .right .notification-bell:hover {
+            color: var(--primary);
+        }
+        #header .right .notification-bell .count {
+            position: absolute;
+            top: -6px;
+            right: -8px;
+            background: var(--secondary);
+            color: #fff;
+            font-size: 11px;
+            border-radius: 30px;
+            padding: 1px 7px;
+            min-width: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+        #header .right .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 6px 12px 6px 8px;
+            border-radius: 30px;
+            transition: var(--transition);
+        }
+        #header .right .user-menu:hover {
+            background: var(--gray-100);
+        }
+        #header .right .user-menu .avatar-sm {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            background: var(--primary-light);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        #header .right .user-menu span {
+            font-weight: 500;
+            font-size: 14px;
+            color: var(--gray-700);
+        }
+        #content {
+            flex: 1;
+            padding: 24px 28px;
+            overflow-y: auto;
+            background: var(--gray-50);
+        }
+        .page-section {
+            display: none;
+            animation: fadeUp 0.3s ease;
+        }
+        .page-section.active {
+            display: block;
+        }
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--gray-900);
+        }
+        .page-subtitle {
+            color: var(--gray-500);
+            margin-bottom: 24px;
+            font-size: 15px;
+        }
+        .card {
+            background: #fff;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 20px 22px;
+            margin-bottom: 20px;
+            transition: var(--transition);
+            border: 1px solid var(--gray-100);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            font-weight: 600;
+            font-size: 18px;
+            color: var(--gray-800);
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+        .stat-card {
+            background: #fff;
+            border-radius: var(--border-radius);
+            padding: 18px 20px;
+            box-shadow: var(--box-shadow);
+            border: 1px solid var(--gray-100);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .stat-card .icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: #fff;
+            flex-shrink: 0;
+        }
+        .stat-card .icon.blue {
+            background: var(--primary);
+        }
+        .stat-card .icon.green {
+            background: var(--success);
+        }
+        .stat-card .icon.orange {
+            background: var(--warning);
+        }
+        .stat-card .icon.red {
+            background: var(--danger);
+        }
+        .stat-card .icon.purple {
+            background: #8b5cf6;
+        }
+        .stat-card .icon.pink {
+            background: var(--secondary);
+        }
+        .stat-card .info h3 {
+            font-size: 26px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        .stat-card .info span {
+            color: var(--gray-500);
+            font-size: 14px;
+        }
+        .btn {
+            padding: 8px 18px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(67, 97, 238, 0.25);
+        }
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+        .btn-success {
+            background: var(--success);
+            color: #fff;
+        }
+        .btn-success:hover {
+            background: #388e3c;
+        }
+        .btn-danger {
+            background: var(--danger);
+            color: #fff;
+        }
+        .btn-danger:hover {
+            background: #c62828;
+        }
+        .btn-warning {
+            background: var(--warning);
+            color: #212529;
+        }
+        .btn-warning:hover {
+            background: #f57f17;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid var(--gray-300);
+            color: var(--gray-700);
+        }
+        .btn-outline:hover {
+            background: var(--gray-100);
+        }
+        .btn-sm {
+            padding: 5px 12px;
+            font-size: 12px;
+            border-radius: 8px;
+        }
+        .btn-block {
+            width: 100%;
+            justify-content: center;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+            color: var(--gray-700);
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid var(--gray-200);
+            border-radius: 10px;
+            font-size: 14px;
+            background: var(--gray-50);
+            transition: var(--transition);
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.12);
+        }
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        table th {
+            text-align: left;
+            padding: 12px 10px;
+            background: var(--gray-50);
+            font-weight: 600;
+            color: var(--gray-600);
+            border-bottom: 2px solid var(--gray-200);
+        }
+        table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--gray-100);
+        }
+        table tr:hover td {
+            background: var(--gray-50);
+        }
+        .badge-status {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .badge-status.accepted {
+            background: #d4edda;
+            color: #155724;
+        }
+        .badge-status.refused {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .badge-status.active {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        .badge-status.inactive {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            padding: 16px;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal {
+            background: #fff;
+            border-radius: var(--border-radius);
+            max-width: 680px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 28px 30px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2);
+            animation: fadeUp 0.25s ease;
+        }
+        .modal h2 {
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+        .modal .close-modal {
+            float: right;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--gray-400);
+            transition: var(--transition);
+        }
+        .modal .close-modal:hover {
+            color: var(--gray-700);
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+        .calendar-grid .day {
+            padding: 8px 4px;
+            text-align: center;
+            border-radius: 8px;
+            background: var(--gray-50);
+            font-size: 14px;
+        }
+        .calendar-grid .day-header {
+            font-weight: 600;
+            background: transparent;
+            color: var(--gray-500);
+        }
+        .calendar-grid .day-number {
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .calendar-grid .day-number:hover {
+            background: var(--primary-light);
+            color: #fff;
+        }
+        .calendar-grid .day-number.has-event {
+            background: var(--primary);
+            color: #fff;
+        }
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .search-box input,
+        .search-box select {
+            flex: 1;
+            padding: 10px 16px;
+            border: 1.5px solid var(--gray-200);
+            border-radius: 10px;
+            font-size: 14px;
+            background: var(--gray-50);
+            min-width: 140px;
+        }
+        .search-box input:focus,
+        .search-box select:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        .search-box button {
+            padding: 10px 22px;
+        }
+        .tabs {
+            display: flex;
+            gap: 4px;
+            border-bottom: 2px solid var(--gray-200);
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .tabs .tab {
+            padding: 10px 22px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--gray-500);
+            border-bottom: 3px solid transparent;
+            transition: var(--transition);
+            font-size: 14px;
+        }
+        .tabs .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+        .tabs .tab:hover {
+            color: var(--primary);
+        }
+        .vote-bar {
+            height: 18px;
+            background: var(--gray-200);
+            border-radius: 20px;
+            overflow: hidden;
+            margin: 4px 0;
+        }
+        .vote-bar-inner {
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.3s;
+        }
+        .alert-item {
+            border-left: 4px solid var(--warning);
+            padding: 10px 14px;
+            margin: 6px 0;
+            background: var(--gray-50);
+            border-radius: 8px;
+        }
+        .reunion-creneau {
+            border: 1px solid var(--gray-200);
+            border-radius: 10px;
+            padding: 10px;
+            margin: 6px 0;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .reunion-creneau:hover {
+            background: var(--gray-50);
+        }
+        .reunion-creneau.selected {
+            border-color: var(--success);
+            background: #e8f5e9;
+        }
+        .permission-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            margin: 2px;
+        }
+        .perm-read {
+            background: #d4edda;
+            color: #155724;
+        }
+        .perm-write {
+            background: #cce5ff;
+            color: #004085;
+        }
+        .perm-delete {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .perm-none {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+        .widget {
+            border: 2px dashed var(--gray-300);
+            border-radius: var(--border-radius);
+            padding: 16px;
+            background: #fff;
+            transition: var(--transition);
+            cursor: grab;
+        }
+        .widget:hover {
+            border-color: var(--primary);
+        }
+        .widget .widget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .widget .widget-header .drag-handle {
+            cursor: grab;
+            color: var(--gray-400);
+        }
+        .widget .widget-header .remove-widget {
+            cursor: pointer;
+            color: var(--danger);
+        }
+        .widgets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .maintenance-banner {
+            background: var(--warning);
+            color: #212529;
+            padding: 12px 20px;
+            text-align: center;
+            font-weight: 600;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+        }
+        .sync-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--gray-500);
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: var(--gray-100);
+        }
+        .sync-indicator .fa-spin {
+            color: var(--primary);
+        }
+        @media (max-width:1024px) {
+            .grid-4 {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
         @media (max-width:768px) {
-            #sidebar { transform:translateX(-100%); width:280px; box-shadow:4px 0 20px rgba(0,0,0,0.08); }
-            #sidebar.open { transform:translateX(0); }
-            #main { margin-left:0; }
-            #header .left .toggle-sidebar { display:block; }
-            #header .left .page-title { font-size:17px; }
-            #content { padding:16px; }
-            .grid-2, .grid-3, .grid-4 { grid-template-columns:1fr; }
-            .stat-card { padding:14px; }
-            .modal { padding:20px; }
-            .search-box input, .search-box select { min-width:120px; }
-            .tabs .tab { padding:8px 14px; font-size:13px; }
-            .login-card { padding:28px 20px; margin:12px; }
-            .widgets-grid { grid-template-columns:1fr; }
+            #sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+                box-shadow: 4px 0 20px rgba(0, 0, 0, 0.08);
+            }
+            #sidebar.open {
+                transform: translateX(0);
+            }
+            #main {
+                margin-left: 0;
+            }
+            #header .left .toggle-sidebar {
+                display: block;
+            }
+            #header .left .page-title {
+                font-size: 17px;
+            }
+            #content {
+                padding: 16px;
+            }
+            .grid-2,
+            .grid-3,
+            .grid-4 {
+                grid-template-columns: 1fr;
+            }
+            .stat-card {
+                padding: 14px;
+            }
+            .modal {
+                padding: 20px;
+            }
+            .search-box input,
+            .search-box select {
+                min-width: 120px;
+            }
+            .tabs .tab {
+                padding: 8px 14px;
+                font-size: 13px;
+            }
+            .login-card {
+                padding: 28px 20px;
+                margin: 12px;
+            }
+            .widgets-grid {
+                grid-template-columns: 1fr;
+            }
         }
         @media (max-width:480px) {
-            #header { padding:0 12px; }
-            #header .right .user-menu span { display:none; }
-            .btn { font-size:13px; padding:6px 14px; }
-            .table-responsive table { font-size:13px; }
+            #header {
+                padding: 0 12px;
+            }
+            #header .right .user-menu span {
+                display: none;
+            }
+            .btn {
+                font-size: 13px;
+                padding: 6px 14px;
+            }
+            .table-responsive table {
+                font-size: 13px;
+            }
         }
-        ::-webkit-scrollbar { width:5px; }
-        ::-webkit-scrollbar-track { background:var(--gray-100); }
-        ::-webkit-scrollbar-thumb { background:var(--gray-300); border-radius:10px; }
-        ::-webkit-scrollbar-thumb:hover { background:var(--gray-400); }
-        #emergencyBtn { position:fixed; bottom:20px; right:20px; background:var(--danger); color:#fff; border:none; border-radius:50px; padding:8px 16px; font-size:12px; font-weight:600; cursor:pointer; z-index:9998; box-shadow:0 4px 12px rgba(231,76,60,0.4); transition:var(--transition); opacity:0.6; }
-        #emergencyBtn:hover { opacity:1; transform:scale(1.05); }
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--gray-100);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--gray-300);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-400);
+        }
+        #emergencyBtn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--danger);
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            padding: 8px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            z-index: 9998;
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+            transition: var(--transition);
+            opacity: 0.6;
+        }
+        #emergencyBtn:hover {
+            opacity: 1;
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body>
@@ -225,7 +949,10 @@
         <div class="brand"><i class="fas fa-graduation-cap"></i> <span id="platformName">ENT Collège</span></div>
         <div class="user-info">
             <div class="avatar" id="sidebarAvatar">A</div>
-            <div><div class="name" id="sidebarName">Admin</div><div class="role" id="sidebarRole">Administrateur</div></div>
+            <div>
+                <div class="name" id="sidebarName">Admin</div>
+                <div class="role" id="sidebarRole">Administrateur</div>
+            </div>
         </div>
         <nav class="menu" id="mainMenu"></nav>
         <div class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Déconnexion</div>
@@ -239,6 +966,7 @@
                 <span class="page-title" id="currentPageTitle">Tableau de bord</span>
             </div>
             <div class="right">
+                <span class="sync-indicator" id="syncIndicator"><i class="fas fa-circle-notch fa-spin"></i> Synchro...</span>
                 <div class="notification-bell" id="notificationBell">
                     <i class="fas fa-bell"></i>
                     <span class="count" id="notifCount">0</span>
@@ -265,7 +993,6 @@
             <div id="page-statistiques" class="page-section"></div>
             <div id="page-parametres" class="page-section"></div>
             <div id="page-droits" class="page-section"></div>
-            <!-- Nouveaux modules -->
             <div id="page-tableaudebord" class="page-section"></div>
             <div id="page-edt" class="page-section"></div>
             <div id="page-maintenance" class="page-section"></div>
@@ -284,7 +1011,7 @@
 
     <script>
         // ================================================================
-        //  CONFIGURATION FIREBASE (vos identifiants)
+        //  CONFIGURATION FIREBASE (fournie par l'utilisateur)
         // ================================================================
         const firebaseConfig = {
             apiKey: "AIzaSyAPE0DhujXsx3Rmf2T1nYXsRFUQcVsrq6w",
@@ -295,149 +1022,267 @@
             appId: "1:1060096783609:web:115a4c7f3648ace8de5e28"
         };
 
-        let db = null;
-        let useFirestore = true; // Activer Firestore
-
-        try {
-            firebase.initializeApp(firebaseConfig);
-            db = firebase.firestore();
-            console.log('✅ Firestore connecté.');
-        } catch(e) {
-            console.warn('⚠️ Erreur Firestore:', e);
-            useFirestore = false;
-            console.warn('⚠️ Utilisation de localStorage en fallback.');
-        }
-
-        // ================================================================
-        //  COUCHES D'ACCÈS AUX DONNÉES
-        // ================================================================
+        // Initialisation Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
         const COLLECTION = 'ent_data';
+        let useFirestore = true;
+        console.log('✅ Firestore connecté avec succès.');
 
-        async function loadData() {
-            if (useFirestore && db) {
-                try {
-                    const doc = await db.collection(COLLECTION).doc('main').get();
-                    if (doc.exists) {
-                        return doc.data();
-                    } else {
-                        const defaultData = getDefaultData();
-                        await db.collection(COLLECTION).doc('main').set(defaultData);
-                        return defaultData;
+        // ================================================================
+        //  COUCHES D'ACCÈS AUX DONNÉES AVEC SYNCHRONISATION EN TEMPS RÉEL
+        // ================================================================
+        let currentData = null;
+        let dataListeners = [];
+        let isSyncing = false;
+        let syncCallbacks = [];
+
+        function notifySync() {
+            document.getElementById('syncIndicator').innerHTML =
+                '<i class="fas fa-circle-notch fa-spin"></i> Synchro...';
+            isSyncing = true;
+        }
+
+        function notifySyncDone() {
+            document.getElementById('syncIndicator').innerHTML =
+                '<i class="fas fa-check-circle" style="color:var(--success);"></i> Synchronisé';
+            isSyncing = false;
+            syncCallbacks.forEach(cb => cb());
+            syncCallbacks = [];
+        }
+
+        // Écoute en temps réel sur Firestore
+        function startRealtimeListener() {
+            // Se désabonner des anciens listeners
+            dataListeners.forEach(unsub => unsub());
+            dataListeners = [];
+
+            const unsub = db.collection(COLLECTION).doc('main')
+                .onSnapshot(async (doc) => {
+                    notifySync();
+                    try {
+                        if (doc.exists) {
+                            const data = doc.data();
+                            // Vérifier les clés manquantes
+                            const defaultData = getDefaultData();
+                            for (let key in defaultData) {
+                                if (!data.hasOwnProperty(key) || !Array.isArray(data[key])) {
+                                    data[key] = defaultData[key];
+                                }
+                            }
+                            if (!data.settings) data.settings = defaultData.settings;
+                            if (!data.settings.modules) data.settings.modules = defaultData.settings.modules;
+                            if (!data.settings.security) data.settings.security = defaultData.settings.security;
+                            if (!data.settings.maintenance) data.settings.maintenance = defaultData.settings
+                            .maintenance;
+                            // Mettre à jour le cache
+                            currentData = data;
+                            window._cachedData = data;
+                            // Sauvegarder aussi en localStorage pour fallback
+                            localStorage.setItem('ent_data', JSON.stringify(data));
+                            notifySyncDone();
+                            // Re-rendre la page courante si l'utilisateur est connecté
+                            const user = getCurrentUser();
+                            if (user) {
+                                const activePage = document.querySelector('.page-section.active');
+                                if (activePage) {
+                                    const pageId = activePage.id.replace('page-', '');
+                                    renderPage(pageId);
+                                    updateNotifBadge();
+                                }
+                            }
+                        } else {
+                            // Créer le document avec les données par défaut
+                            const defaultData = getDefaultData();
+                            await db.collection(COLLECTION).doc('main').set(defaultData);
+                            currentData = defaultData;
+                            window._cachedData = defaultData;
+                            localStorage.setItem('ent_data', JSON.stringify(defaultData));
+                            notifySyncDone();
+                        }
+                    } catch (e) {
+                        console.error('Erreur synchro:', e);
+                        notifySyncDone();
                     }
-                } catch (e) {
-                    console.error('Erreur Firestore:', e);
-                    return loadFromLocalStorage();
-                }
-            } else {
-                return loadFromLocalStorage();
+                }, (error) => {
+                    console.error('Erreur listener:', error);
+                    notifySyncDone();
+                    // Fallback sur localStorage
+                    const raw = localStorage.getItem('ent_data');
+                    if (raw) {
+                        currentData = JSON.parse(raw);
+                        window._cachedData = currentData;
+                    }
+                });
+
+            dataListeners.push(unsub);
+        }
+
+        // Fonction pour sauvegarder dans Firestore
+        async function saveDataToFirestore(data) {
+            notifySync();
+            try {
+                await db.collection(COLLECTION).doc('main').set(data);
+                currentData = data;
+                window._cachedData = data;
+                localStorage.setItem('ent_data', JSON.stringify(data));
+                notifySyncDone();
+                return true;
+            } catch (e) {
+                console.error('Erreur sauvegarde Firestore:', e);
+                // Fallback sur localStorage
+                localStorage.setItem('ent_data', JSON.stringify(data));
+                currentData = data;
+                window._cachedData = data;
+                notifySyncDone();
+                return false;
             }
         }
 
-        async function saveData(data) {
-            if (useFirestore && db) {
-                try {
-                    await db.collection(COLLECTION).doc('main').set(data);
-                } catch (e) {
-                    console.error('Erreur Firestore save:', e);
-                    saveToLocalStorage(data);
-                }
-            } else {
-                saveToLocalStorage(data);
-            }
-        }
-
-        function loadFromLocalStorage() {
-            const raw = localStorage.getItem('ent_data');
-            if (raw) return JSON.parse(raw);
-            return getDefaultData();
-        }
-
-        function saveToLocalStorage(data) {
-            localStorage.setItem('ent_data', JSON.stringify(data));
-        }
-
-        function getDataSync() {
-            if (window._cachedData) return window._cachedData;
+        // Fonction de chargement des données (synchrone pour compatibilité)
+        function loadDataSync() {
+            if (currentData) return currentData;
             const raw = localStorage.getItem('ent_data');
             if (raw) {
-                const data = JSON.parse(raw);
-                window._cachedData = data;
-                return data;
+                try {
+                    currentData = JSON.parse(raw);
+                    window._cachedData = currentData;
+                    return currentData;
+                } catch (e) {
+                    // fallback
+                }
             }
-            return getDefaultData();
+            const defaultData = getDefaultData();
+            currentData = defaultData;
+            window._cachedData = defaultData;
+            localStorage.setItem('ent_data', JSON.stringify(defaultData));
+            // Tenter de sauvegarder dans Firestore en arrière-plan
+            db.collection(COLLECTION).doc('main').set(defaultData).catch(() => {});
+            return defaultData;
         }
 
-        let currentData = null;
+        async function loadDataAsync() {
+            if (currentData) return currentData;
+            try {
+                const doc = await db.collection(COLLECTION).doc('main').get();
+                if (doc.exists) {
+                    const data = doc.data();
+                    const defaultData = getDefaultData();
+                    for (let key in defaultData) {
+                        if (!data.hasOwnProperty(key) || !Array.isArray(data[key])) {
+                            data[key] = defaultData[key];
+                        }
+                    }
+                    if (!data.settings) data.settings = defaultData.settings;
+                    if (!data.settings.modules) data.settings.modules = defaultData.settings.modules;
+                    if (!data.settings.security) data.settings.security = defaultData.settings.security;
+                    if (!data.settings.maintenance) data.settings.maintenance = defaultData.settings.maintenance;
+                    currentData = data;
+                    window._cachedData = data;
+                    localStorage.setItem('ent_data', JSON.stringify(data));
+                    return data;
+                } else {
+                    const defaultData = getDefaultData();
+                    await db.collection(COLLECTION).doc('main').set(defaultData);
+                    currentData = defaultData;
+                    window._cachedData = defaultData;
+                    localStorage.setItem('ent_data', JSON.stringify(defaultData));
+                    return defaultData;
+                }
+            } catch (e) {
+                console.error('Erreur chargement Firestore:', e);
+                return loadDataSync();
+            }
+        }
 
         async function getData() {
             if (currentData) return currentData;
-            currentData = await loadData();
+            return await loadDataAsync();
+        }
+
+        function getDataSync() {
+            return loadDataSync();
+        }
+
+        async function saveData(data) {
+            currentData = data;
+            window._cachedData = data;
+            localStorage.setItem('ent_data', JSON.stringify(data));
+            await saveDataToFirestore(data);
+        }
+
+        // Fonction d'initialisation des données
+        async function initData() {
+            const data = await loadDataAsync();
+            // Vérifier les clés manquantes
             const defaultData = getDefaultData();
             for (let key in defaultData) {
-                if (!currentData.hasOwnProperty(key) || !Array.isArray(currentData[key])) {
-                    currentData[key] = defaultData[key];
+                if (!data.hasOwnProperty(key) || !Array.isArray(data[key])) {
+                    data[key] = defaultData[key];
                 }
             }
-            if (!currentData.settings) currentData.settings = defaultData.settings;
-            if (!currentData.settings.modules) currentData.settings.modules = defaultData.settings.modules;
-            if (!currentData.settings.security) currentData.settings.security = defaultData.settings.security;
-            if (!currentData.settings.maintenance) currentData.settings.maintenance = defaultData.settings.maintenance;
-            const admin = currentData.users.find(u => u.role === 'admin');
+            if (!data.settings) data.settings = defaultData.settings;
+            if (!data.settings.modules) data.settings.modules = defaultData.settings.modules;
+            if (!data.settings.security) data.settings.security = defaultData.settings.security;
+            if (!data.settings.maintenance) data.settings.maintenance = defaultData.settings.maintenance;
+            const admin = data.users.find(u => u.role === 'admin');
             if (admin) {
-                const modules = Object.keys(currentData.settings.modules);
+                const modules = Object.keys(data.settings.modules);
                 modules.forEach(m => {
                     if (!admin.permissions) admin.permissions = {};
                     if (!admin.permissions[m]) admin.permissions[m] = { read: true, write: true, delete: true };
                 });
             }
-            await saveData(currentData);
-            window._cachedData = currentData;
-            return currentData;
-        }
-
-        async function saveData(data) {
+            await saveData(data);
             currentData = data;
-            if (useFirestore && db) {
-                try {
-                    await db.collection(COLLECTION).doc('main').set(data);
-                } catch(e) {
-                    console.error('Firestore save error:', e);
-                    localStorage.setItem('ent_data', JSON.stringify(data));
-                }
-            } else {
-                localStorage.setItem('ent_data', JSON.stringify(data));
-            }
             window._cachedData = data;
+            // Démarrer l'écoute en temps réel
+            startRealtimeListener();
         }
-
-        function generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 6); }
 
         // ---------- DONNÉES PAR DÉFAUT ----------
         function getDefaultData() {
             return {
                 users: [
-                    { id: 'u1', nom: 'Admin', prenom: 'Super', email: 'admin@college.fr', password: 'Admin123!', role: 'admin', discipline: 'Administration', photo: '', active: true, permissions: {} },
-                    { id: 'u2', nom: 'Dupont', prenom: 'Marie', email: 'marie.dupont@college.fr', password: 'Marie123!', role: 'enseignant', discipline: 'Mathématiques', photo: '', active: true, permissions: {} },
-                    { id: 'u3', nom: 'Martin', prenom: 'Jean', email: 'jean.martin@college.fr', password: 'Jean123!', role: 'enseignant', discipline: 'Français', photo: '', active: true, permissions: {} }
+                    { id: 'u1', nom: 'Admin', prenom: 'Super', email: 'admin@college.fr', password: 'Admin123!',
+                        role: 'admin', discipline: 'Administration', photo: '', active: true, permissions: {} },
+                    { id: 'u2', nom: 'Dupont', prenom: 'Marie', email: 'marie.dupont@college.fr',
+                        password: 'Marie123!', role: 'enseignant', discipline: 'Mathématiques', photo: '',
+                    active: true, permissions: {} },
+                    { id: 'u3', nom: 'Martin', prenom: 'Jean', email: 'jean.martin@college.fr', password: 'Jean123!',
+                        role: 'enseignant', discipline: 'Français', photo: '', active: true, permissions: {} }
                 ],
                 settings: {
                     platformName: 'ENT Collège',
                     logo: '',
                     primaryColor: '#4361ee',
                     modules: {
-                        documents: true, inscriptions: true, agenda: true, salles: true,
-                        absences: true, notifications: true, recherche: true, statistiques: true,
-                        parametres: true, sondages: true, alertes: true, reunions: true, droits: true,
-                        tableaudebord: true, edt: true, maintenance: true
+                        documents: true,
+                        inscriptions: true,
+                        agenda: true,
+                        salles: true,
+                        absences: true,
+                        notifications: true,
+                        recherche: true,
+                        statistiques: true,
+                        parametres: true,
+                        sondages: true,
+                        alertes: true,
+                        reunions: true,
+                        droits: true,
+                        tableaudebord: true,
+                        edt: true,
+                        maintenance: true
                     },
                     security: { sessionTimeout: 600 },
-                    maintenance: { active: false, message: 'La plateforme est en maintenance. Veuillez revenir ultérieurement.' }
+                    maintenance: { active: false,
+                    message: 'La plateforme est en maintenance. Veuillez revenir ultérieurement.' }
                 },
                 categories_documents: [
-                    { id:'cat1', nom:'Courriers' }, { id:'cat2', nom:'Formulaires' },
-                    { id:'cat3', nom:'Demploi' }, { id:'cat4', nom:'Sorties scolaires' },
-                    { id:'cat5', nom:'Documents administratifs' }, { id:'cat6', nom:'Circulaires' },
-                    { id:'cat7', nom:'Notes de service' }
+                    { id: 'cat1', nom: 'Courriers' }, { id: 'cat2', nom: 'Formulaires' },
+                    { id: 'cat3', nom: 'Demploi' }, { id: 'cat4', nom: 'Sorties scolaires' },
+                    { id: 'cat5', nom: 'Documents administratifs' }, { id: 'cat6', nom: 'Circulaires' },
+                    { id: 'cat7', nom: 'Notes de service' }
                 ],
                 documents: [],
                 evenements: [],
@@ -456,14 +1301,15 @@
             };
         }
 
-        // ================================================================
-        //  SESSION
-        // ================================================================
+        // ---------- ID GÉNÉRATEUR ----------
+        function generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 6); }
+
+        // ---------- SESSION ----------
         let sessionTimer = null;
         const SESSION_CHECK = 10000;
 
         function getCurrentUser() {
-            const session = JSON.parse(localStorage.getItem('ent_session')||'null');
+            const session = JSON.parse(localStorage.getItem('ent_session') || 'null');
             if (!session) return null;
             if (session.expiry && Date.now() > session.expiry) { clearSession(); return null; }
             const data = getDataSync();
@@ -476,30 +1322,39 @@
         function renewSession(userId) {
             const data = getDataSync();
             const timeout = data.settings.security.sessionTimeout || 600;
-            localStorage.setItem('ent_session', JSON.stringify({ userId, expiry: Date.now() + timeout*1000 }));
+            localStorage.setItem('ent_session', JSON.stringify({ userId, expiry: Date.now() + timeout * 1000 }));
             resetSessionTimer();
         }
+
         function setSession(userId) { renewSession(userId); }
-        function clearSession() { localStorage.removeItem('ent_session'); if(sessionTimer) clearInterval(sessionTimer); sessionTimer=null; }
-        window.addEventListener('beforeunload', ()=>localStorage.setItem('ent_last_activity', Date.now()));
+
+        function clearSession() {
+            localStorage.removeItem('ent_session');
+            if (sessionTimer) clearInterval(sessionTimer);
+            sessionTimer = null;
+        }
+        window.addEventListener('beforeunload', () => localStorage.setItem('ent_last_activity', Date.now()));
         document.addEventListener('visibilitychange', function() {
             if (document.hidden) localStorage.setItem('ent_last_activity', Date.now());
             else {
-                const last = parseInt(localStorage.getItem('ent_last_activity')||'0');
+                const last = parseInt(localStorage.getItem('ent_last_activity') || '0');
                 const data = getDataSync();
-                const timeout = (data.settings.security.sessionTimeout||600)*1000;
-                if (Date.now() - last > timeout) { clearSession(); logoutUser(); }
-                else { const u = getCurrentUser(); if (u) renewSession(u.id); }
+                const timeout = (data.settings.security.sessionTimeout || 600) * 1000;
+                if (Date.now() - last > timeout) { clearSession(); logoutUser(); } else { const u = getCurrentUser(); if (u)
+                        renewSession(u.id); }
             }
         });
+
         function resetSessionTimer() {
             if (sessionTimer) clearInterval(sessionTimer);
             sessionTimer = setInterval(() => {
-                const session = JSON.parse(localStorage.getItem('ent_session')||'null');
-                if (!session) { clearInterval(sessionTimer); sessionTimer=null; return; }
+                const session = JSON.parse(localStorage.getItem('ent_session') || 'null');
+                if (!session) { clearInterval(sessionTimer);
+                    sessionTimer = null; return; }
                 if (session.expiry && Date.now() > session.expiry) { clearSession(); logoutUser(); }
             }, SESSION_CHECK);
         }
+
         function logoutUser() {
             const user = getCurrentUser();
             if (user) addLog('Déconnexion automatique', user.email);
@@ -508,47 +1363,61 @@
             document.getElementById('main').style.display = 'none';
         }
 
-        // ================================================================
-        //  LOGS & NOTIFICATIONS
-        // ================================================================
-        async function addLog(action, details='') {
+        // ---------- LOGS & NOTIFICATIONS ----------
+        async function addLog(action, details = '') {
             const data = await getData();
             const user = getCurrentUser();
-            data.logs.push({ id:generateId(), date:new Date().toISOString(),
-                userId:user?user.id:'system', userName:user?user.prenom+' '+user.nom:'Système',
-                action, details });
+            data.logs.push({
+                id: generateId(),
+                date: new Date().toISOString(),
+                userId: user ? user.id : 'system',
+                userName: user ? user.prenom + ' ' + user.nom : 'Système',
+                action,
+                details
+            });
             await saveData(data);
         }
-        async function addNotification(userId, message, type='info', lien='') {
+
+        async function addNotification(userId, message, type = 'info', lien = '') {
             const data = await getData();
-            data.notifications.push({ id:generateId(), userId, message, type, lien, read:false, date:new Date().toISOString() });
+            data.notifications.push({
+                id: generateId(),
+                userId,
+                message,
+                type,
+                lien,
+                read: false,
+                date: new Date().toISOString()
+            });
             await saveData(data);
             updateNotifBadge();
         }
+
         function getUnreadNotifCount(userId) {
             const data = getDataSync();
             return data.notifications.filter(n => n.userId === userId && !n.read).length;
         }
+
         function updateNotifBadge() {
             const user = getCurrentUser();
             if (!user) return;
             document.getElementById('notifCount').textContent = getUnreadNotifCount(user.id);
         }
 
-        // ================================================================
-        //  AUTH
-        // ================================================================
+        // ---------- AUTH ----------
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             const data = await getData();
+            // Vérifier maintenance
             if (data.settings.maintenance && data.settings.maintenance.active) {
                 const user = data.users.find(u => u.email === email && u.password === password && u.active !== false);
                 if (user && user.role === 'admin') {
                     // ok
                 } else {
-                    document.getElementById('loginError').textContent = data.settings.maintenance.message || 'Plateforme en maintenance.';
+                    document.getElementById('loginError').textContent = data.settings.maintenance.message ||
+                        'Plateforme en maintenance.';
                     return;
                 }
             }
@@ -560,7 +1429,8 @@
                 render();
                 document.getElementById('loginError').textContent = '';
             } else {
-                document.getElementById('loginError').textContent = 'Email ou mot de passe incorrect, ou compte inactif.';
+                document.getElementById('loginError').textContent =
+                'Email ou mot de passe incorrect, ou compte inactif.';
             }
         });
         document.getElementById('logoutBtn').addEventListener('click', async function() {
@@ -571,9 +1441,7 @@
             document.getElementById('main').style.display = 'none';
         });
 
-        // ================================================================
-        //  PERMISSIONS
-        // ================================================================
+        // ---------- PERMISSIONS ----------
         function hasPermission(user, module, action) {
             if (!user) return false;
             if (user.role === 'admin') return true;
@@ -581,9 +1449,13 @@
             if (!perms) return false;
             return perms[action] === true;
         }
+
         function canRead(user, module) { return hasPermission(user, module, 'read'); }
+
         function canWrite(user, module) { return hasPermission(user, module, 'write'); }
+
         function canDelete(user, module) { return hasPermission(user, module, 'delete'); }
+
         function isAdmin() { const u = getCurrentUser(); return u && u.role === 'admin'; }
 
         // ================================================================
@@ -598,20 +1470,20 @@
             }
             document.getElementById('loginPage').classList.remove('active');
             document.getElementById('main').style.display = 'flex';
-            const name = user.prenom+' '+user.nom;
+            const name = user.prenom + ' ' + user.nom;
             document.getElementById('sidebarName').textContent = name;
             document.getElementById('headerName').textContent = name;
-            const avatar = (user.prenom.charAt(0)+user.nom.charAt(0)).toUpperCase();
+            const avatar = (user.prenom.charAt(0) + user.nom.charAt(0)).toUpperCase();
             document.getElementById('sidebarAvatar').textContent = avatar;
             document.getElementById('headerAvatar').textContent = avatar;
-            document.getElementById('sidebarRole').textContent = user.role==='admin'?'Administrateur':'Enseignant';
+            document.getElementById('sidebarRole').textContent = user.role === 'admin' ? 'Administrateur' : 'Enseignant';
             const data = await getData();
             document.getElementById('platformName').textContent = data.settings.platformName || 'ENT Collège';
             document.getElementById('loginPlatformName').textContent = data.settings.platformName || 'ENT Collège';
             buildMenu(user, data);
             updateNotifBadge();
             const activePage = document.querySelector('.page-section.active');
-            if (activePage) loadPage(activePage.id.replace('page-',''));
+            if (activePage) loadPage(activePage.id.replace('page-', ''));
             else loadPage('dashboard');
             localStorage.setItem('ent_last_activity', Date.now());
         }
@@ -620,31 +1492,33 @@
         function buildMenu(user, data) {
             const menu = document.getElementById('mainMenu');
             const items = [
-                { id:'dashboard', icon:'fa-gauge-high', label:'Tableau de bord', module:null },
-                { id:'documents', icon:'fa-folder-open', label:'Documents', module:'documents' },
-                { id:'inscriptions', icon:'fa-pen-to-square', label:'Inscriptions', module:'inscriptions' },
-                { id:'agenda', icon:'fa-calendar-days', label:'Agenda', module:'agenda' },
-                { id:'salles', icon:'fa-building', label:'Salles', module:'salles' },
-                { id:'absences', icon:'fa-user-slash', label:'Absences', module:'absences' },
-                { id:'sondages', icon:'fa-chart-simple', label:'Sondages', module:'sondages' },
-                { id:'reunions', icon:'fa-handshake', label:'Réunions', module:'reunions' },
-                { id:'alertes', icon:'fa-clock', label:'Alertes', module:'alertes' },
-                { id:'notifications', icon:'fa-bell', label:'Notifications', module:'notifications' },
-                { id:'recherche', icon:'fa-magnifying-glass', label:'Recherche', module:'recherche' },
-                { id:'statistiques', icon:'fa-chart-pie', label:'Statistiques', module:'statistiques' },
-                { id:'admin', icon:'fa-gear', label:'Administration', module:null, adminOnly:true },
-                { id:'parametres', icon:'fa-sliders', label:'Paramètres', module:'parametres' },
-                { id:'droits', icon:'fa-lock', label:'Droits', module:'droits', adminOnly:true },
-                { id:'tableaudebord', icon:'fa-table-cells-large', label:'Tableau de bord perso.', module:'tableaudebord' },
-                { id:'edt', icon:'fa-calendar-week', label:'Emploi du temps (EDT)', module:'edt' },
-                { id:'maintenance', icon:'fa-triangle-exclamation', label:'Maintenance', module:'maintenance', adminOnly:true }
+                { id: 'dashboard', icon: 'fa-gauge-high', label: 'Tableau de bord', module: null },
+                { id: 'documents', icon: 'fa-folder-open', label: 'Documents', module: 'documents' },
+                { id: 'inscriptions', icon: 'fa-pen-to-square', label: 'Inscriptions', module: 'inscriptions' },
+                { id: 'agenda', icon: 'fa-calendar-days', label: 'Agenda', module: 'agenda' },
+                { id: 'salles', icon: 'fa-building', label: 'Salles', module: 'salles' },
+                { id: 'absences', icon: 'fa-user-slash', label: 'Absences', module: 'absences' },
+                { id: 'sondages', icon: 'fa-chart-simple', label: 'Sondages', module: 'sondages' },
+                { id: 'reunions', icon: 'fa-handshake', label: 'Réunions', module: 'reunions' },
+                { id: 'alertes', icon: 'fa-clock', label: 'Alertes', module: 'alertes' },
+                { id: 'notifications', icon: 'fa-bell', label: 'Notifications', module: 'notifications' },
+                { id: 'recherche', icon: 'fa-magnifying-glass', label: 'Recherche', module: 'recherche' },
+                { id: 'statistiques', icon: 'fa-chart-pie', label: 'Statistiques', module: 'statistiques' },
+                { id: 'admin', icon: 'fa-gear', label: 'Administration', module: null, adminOnly: true },
+                { id: 'parametres', icon: 'fa-sliders', label: 'Paramètres', module: 'parametres' },
+                { id: 'droits', icon: 'fa-lock', label: 'Droits', module: 'droits', adminOnly: true },
+                { id: 'tableaudebord', icon: 'fa-table-cells-large', label: 'Tableau de bord perso.',
+                module: 'tableaudebord' },
+                { id: 'edt', icon: 'fa-calendar-week', label: 'Emploi du temps (EDT)', module: 'edt' },
+                { id: 'maintenance', icon: 'fa-triangle-exclamation', label: 'Maintenance', module: 'maintenance',
+                    adminOnly: true }
             ];
             let html = '';
             for (const item of items) {
                 if (item.adminOnly && !isAdmin()) continue;
                 if (item.module && data.settings.modules[item.module] === false) continue;
                 if (item.module && !isAdmin() && !canRead(user, item.module)) continue;
-                const active = document.querySelector('.page-section.active')?.id === 'page-'+item.id ? 'active' : '';
+                const active = document.querySelector('.page-section.active')?.id === 'page-' + item.id ? 'active' : '';
                 html += `<div class="menu-item ${active}" data-page="${item.id}"><i class="fas ${item.icon}"></i> ${item.label}</div>`;
             }
             menu.innerHTML = html;
@@ -661,11 +1535,12 @@
 
         function loadPage(pageId) {
             document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
-            const target = document.getElementById('page-'+pageId);
+            const target = document.getElementById('page-' + pageId);
             if (target) {
                 target.classList.add('active');
                 const menuItem = document.querySelector(`.menu-item[data-page="${pageId}"]`);
-                document.getElementById('currentPageTitle').textContent = menuItem ? menuItem.textContent.trim() : pageId;
+                document.getElementById('currentPageTitle').textContent = menuItem ? menuItem.textContent.trim() :
+                pageId;
                 document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
                 if (menuItem) menuItem.classList.add('active');
                 renderPage(pageId);
@@ -673,26 +1548,63 @@
         }
 
         function renderPage(page) {
-            switch(page) {
-                case 'dashboard': renderDashboard(); break;
-                case 'documents': renderDocuments(); break;
-                case 'inscriptions': renderInscriptions(); break;
-                case 'agenda': renderAgenda(); break;
-                case 'salles': renderSalles(); break;
-                case 'absences': renderAbsences(); break;
-                case 'sondages': renderSondages(); break;
-                case 'reunions': renderReunions(); break;
-                case 'alertes': renderAlertes(); break;
-                case 'notifications': renderNotifications(); break;
-                case 'recherche': renderRecherche(); break;
-                case 'admin': renderAdmin(); break;
-                case 'statistiques': renderStatistiques(); break;
-                case 'parametres': renderParametres(); break;
-                case 'droits': renderDroits(); break;
-                case 'tableaudebord': renderTableauDeBord(); break;
-                case 'edt': renderEDT(); break;
-                case 'maintenance': renderMaintenance(); break;
-                default: document.getElementById('page-dashboard').innerHTML = '<p class="text-muted">Page en construction</p>';
+            switch (page) {
+                case 'dashboard':
+                    renderDashboard();
+                    break;
+                case 'documents':
+                    renderDocuments();
+                    break;
+                case 'inscriptions':
+                    renderInscriptions();
+                    break;
+                case 'agenda':
+                    renderAgenda();
+                    break;
+                case 'salles':
+                    renderSalles();
+                    break;
+                case 'absences':
+                    renderAbsences();
+                    break;
+                case 'sondages':
+                    renderSondages();
+                    break;
+                case 'reunions':
+                    renderReunions();
+                    break;
+                case 'alertes':
+                    renderAlertes();
+                    break;
+                case 'notifications':
+                    renderNotifications();
+                    break;
+                case 'recherche':
+                    renderRecherche();
+                    break;
+                case 'admin':
+                    renderAdmin();
+                    break;
+                case 'statistiques':
+                    renderStatistiques();
+                    break;
+                case 'parametres':
+                    renderParametres();
+                    break;
+                case 'droits':
+                    renderDroits();
+                    break;
+                case 'tableaudebord':
+                    renderTableauDeBord();
+                    break;
+                case 'edt':
+                    renderEDT();
+                    break;
+                case 'maintenance':
+                    renderMaintenance();
+                    break;
+                default:
+                    document.getElementById('page-dashboard').innerHTML = '<p class="text-muted">Page en construction</p>';
             }
         }
 
@@ -708,12 +1620,13 @@
             const sondages = data.sondages || [];
             const reunions = data.reunions || [];
             const alertes = data.alertes || [];
-            const absAtt = absences.filter(a => a.userId===user.id && a.statut==='En attente').length;
-            const resToday = reservations.filter(r => new Date(r.date).toDateString()===new Date().toDateString() && r.userId===user.id).length;
-            const notifsUnread = notifications.filter(n => n.userId===user.id && !n.read).length;
-            const sondagesActifs = sondages.filter(s => !s.cloture && new Date(s.dateFin)>=new Date()).length;
-            const reunionsOpen = reunions.filter(r => r.statut==='ouverte').length;
-            const alertesUnread = alertes.filter(a => a.userId===user.id && !a.lu).length;
+            const absAtt = absences.filter(a => a.userId === user.id && a.statut === 'En attente').length;
+            const resToday = reservations.filter(r => new Date(r.date).toDateString() === new Date().toDateString() && r
+                .userId === user.id).length;
+            const notifsUnread = notifications.filter(n => n.userId === user.id && !n.read).length;
+            const sondagesActifs = sondages.filter(s => !s.cloture && new Date(s.dateFin) >= new Date()).length;
+            const reunionsOpen = reunions.filter(r => r.statut === 'ouverte').length;
+            const alertesUnread = alertes.filter(a => a.userId === user.id && !a.lu).length;
 
             let html = `
                 <div class="grid-4">
@@ -762,14 +1675,15 @@
             const c = document.getElementById('miniCalendar');
             if (!c) return;
             const now = new Date();
-            const year=now.getFullYear(), month=now.getMonth();
+            const year = now.getFullYear(),
+                month = now.getMonth();
             const firstDay = new Date(year, month, 1).getDay();
-            const days = new Date(year, month+1, 0).getDate();
+            const days = new Date(year, month + 1, 0).getDate();
             let html = '<div class="calendar-grid">';
-            const jours = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+            const jours = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
             for (let j of jours) html += `<div class="day day-header">${j}</div>`;
-            for (let i=0; i<(firstDay===0?6:firstDay-1); i++) html += `<div class="day"></div>`;
-            for (let d=1; d<=days; d++) html += `<div class="day day-number">${d}</div>`;
+            for (let i = 0; i < (firstDay === 0 ? 6 : firstDay - 1); i++) html += `<div class="day"></div>`;
+            for (let d = 1; d <= days; d++) html += `<div class="day day-number">${d}</div>`;
             html += '</div>';
             c.innerHTML = html;
         }
@@ -821,11 +1735,11 @@
             document.getElementById('page-documents').innerHTML = html;
         }
         window.filterDocs = function() {
-            const s = document.getElementById('docSearch')?.value.toLowerCase()||'';
-            const c = document.getElementById('docCategoryFilter')?.value||'';
+            const s = document.getElementById('docSearch')?.value.toLowerCase() || '';
+            const c = document.getElementById('docCategoryFilter')?.value || '';
             document.querySelectorAll('#docTableBody tr').forEach(row => {
                 const text = row.textContent.toLowerCase();
-                const cat = row.dataset.cat||'';
+                const cat = row.dataset.cat || '';
                 let show = true;
                 if (s && !text.includes(s)) show = false;
                 if (c && cat !== c) show = false;
@@ -835,7 +1749,8 @@
         window.downloadDoc = function(id) {
             const data = getDataSync();
             const d = data.documents.find(d => d.id === id);
-            if (d) { alert(`Téléchargement de "${d.nom}" (simulé)`); addLog('Téléchargement document', d.nom); }
+            if (d) { alert(`Téléchargement de "${d.nom}" (simulé)`);
+                addLog('Téléchargement document', d.nom); }
         };
         window.deleteDocument = async function(id) {
             if (!confirm('Supprimer ?')) return;
@@ -909,7 +1824,8 @@
             const inscrits = data.inscriptions.filter(i => i.evenementId === id);
             if (evt.nbPlacesMax && inscrits.length >= evt.nbPlacesMax) { alert('Places épuisées.'); return; }
             if (data.inscriptions.some(i => i.evenementId === id && i.userId === user.id)) { alert('Déjà inscrit.'); return; }
-            data.inscriptions.push({ id:generateId(), evenementId:id, userId:user.id, userNom:user.prenom+' '+user.nom, date:new Date().toISOString(), statut:'En attente' });
+            data.inscriptions.push({ id: generateId(), evenementId: id, userId: user.id, userNom: user.prenom + ' ' + user
+                    .nom, date: new Date().toISOString(), statut: 'En attente' });
             await saveData(data);
             await addLog('Inscription', evt.titre);
             addNotification(user.id, `Inscrit à "${evt.titre}"`, 'success');
@@ -941,7 +1857,10 @@
         window.toggleCloture = async function(id) {
             const data = await getData();
             const evt = data.evenements.find(e => e.id === id);
-            if (evt) { evt.cloture = !evt.cloture; await saveData(data); await addLog('Clôture/réouverture', evt.titre); renderInscriptions(); }
+            if (evt) { evt.cloture = !evt.cloture;
+                await saveData(data);
+                await addLog('Clôture/réouverture', evt.titre);
+                renderInscriptions(); }
         };
         window.exporterListe = function(id) {
             const data = getDataSync();
@@ -949,7 +1868,7 @@
             if (!evt) return;
             const inscrits = data.inscriptions.filter(i => i.evenementId === id);
             const csv = inscrits.map(i => i.userNom).join('\n');
-            const blob = new Blob([`Liste "${evt.titre}"\n${csv}`], {type:'text/csv'});
+            const blob = new Blob([`Liste "${evt.titre}"\n${csv}`], { type: 'text/csv' });
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
             a.download = `inscrits_${evt.titre}.csv`;
@@ -999,8 +1918,9 @@
             } else if (view === 'semaine') {
                 const today = new Date();
                 let html = `<div class="card"><h4>Semaine du ${today.toLocaleDateString()}</h4>`;
-                for (let i=0; i<7; i++) {
-                    const d = new Date(today); d.setDate(d.getDate()+i);
+                for (let i = 0; i < 7; i++) {
+                    const d = new Date(today);
+                    d.setDate(d.getDate() + i);
                     const dayEvents = events.filter(e => new Date(e.date).toDateString() === d.toDateString());
                     html += `<div style="padding:6px 12px; background:var(--gray-50); border-radius:6px; margin:4px 0;">
                         <strong>${d.toLocaleDateString()}</strong> : ${dayEvents.length ? dayEvents.map(e=>e.titre).join(', ') : 'Aucun'}
@@ -1009,16 +1929,17 @@
                 html += '</div>';
                 container.innerHTML = html;
             } else if (view === 'mois') {
-                const mois = ['Janv','Févr','Mars','Avr','Mai','Juin','Juil','Août','Sept','Oct','Nov','Déc'];
+                const mois = ['Janv', 'Févr', 'Mars', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sept', 'Oct', 'Nov', 'Déc'];
                 const now = new Date();
-                const year=now.getFullYear(), month=now.getMonth();
+                const year = now.getFullYear(),
+                    month = now.getMonth();
                 const firstDay = new Date(year, month, 1).getDay();
-                const days = new Date(year, month+1, 0).getDate();
+                const days = new Date(year, month + 1, 0).getDate();
                 let html = `<div class="card"><h4>${mois[month]} ${year}</h4><div class="calendar-grid">`;
-                const jours = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+                const jours = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
                 for (let j of jours) html += `<div class="day day-header">${j}</div>`;
-                for (let i=0; i<(firstDay===0?6:firstDay-1); i++) html += `<div class="day"></div>`;
-                for (let d=1; d<=days; d++) {
+                for (let i = 0; i < (firstDay === 0 ? 6 : firstDay - 1); i++) html += `<div class="day"></div>`;
+                for (let d = 1; d <= days; d++) {
                     const dateObj = new Date(year, month, d);
                     const hasEvent = events.some(e => new Date(e.date).toDateString() === dateObj.toDateString());
                     html += `<div class="day day-number ${hasEvent?'has-event':''}">${d}</div>`;
@@ -1129,11 +2050,13 @@
             if (!heure) return;
             const salle = data.salles.find(s => s.id === salleId);
             if (salle && salle.disponible === false) { alert('Salle indisponible.'); return; }
-            if (data.reservations.some(r => r.salleId===salleId && r.date===date && r.heure===heure && r.statut!=='Refusée')) {
+            if (data.reservations.some(r => r.salleId === salleId && r.date === date && r.heure === heure && r.statut !==
+                    'Refusée')) {
                 alert('Conflit détecté.');
                 return;
             }
-            data.reservations.push({ id:generateId(), salleId, userId:user.id, date, heure, statut:'En attente', dateCreation:new Date().toISOString() });
+            data.reservations.push({ id: generateId(), salleId, userId: user.id, date, heure, statut: 'En attente',
+                dateCreation: new Date().toISOString() });
             await saveData(data);
             await addLog('Réservation salle', salleId);
             addNotification(user.id, `Demande de réservation ${salle.nom} le ${date} à ${heure}`, 'info');
@@ -1150,12 +2073,20 @@
         window.approuverReservation = async function(id) {
             const data = await getData();
             const r = data.reservations.find(r => r.id === id);
-            if (r) { r.statut = 'Approuvée'; await saveData(data); await addLog('Approbation réservation', id); addNotification(r.userId, 'Réservation approuvée', 'success'); renderSalles(); }
+            if (r) { r.statut = 'Approuvée';
+                await saveData(data);
+                await addLog('Approbation réservation', id);
+                addNotification(r.userId, 'Réservation approuvée', 'success');
+                renderSalles(); }
         };
         window.refuserReservation = async function(id) {
             const data = await getData();
             const r = data.reservations.find(r => r.id === id);
-            if (r) { r.statut = 'Refusée'; await saveData(data); await addLog('Refus réservation', id); addNotification(r.userId, 'Réservation refusée', 'danger'); renderSalles(); }
+            if (r) { r.statut = 'Refusée';
+                await saveData(data);
+                await addLog('Refus réservation', id);
+                addNotification(r.userId, 'Réservation refusée', 'danger');
+                renderSalles(); }
         };
         window.supprimerReservation = async function(id) {
             if (!confirm('Supprimer ?')) return;
@@ -1181,7 +2112,10 @@
         window.toggleDispoSalle = async function(id) {
             const data = await getData();
             const s = data.salles.find(s => s.id === id);
-            if (s) { s.disponible = s.disponible === false ? true : false; await saveData(data); await addLog('Toggle disponibilité', s.nom); renderSalles(); }
+            if (s) { s.disponible = s.disponible === false ? true : false;
+                await saveData(data);
+                await addLog('Toggle disponibilité', s.nom);
+                renderSalles(); }
         };
 
         // ================================================================
@@ -1250,12 +2184,20 @@
         window.accepterAbsence = async function(id) {
             const data = await getData();
             const a = data.absences.find(a => a.id === id);
-            if (a) { a.statut = 'Acceptée'; await saveData(data); await addLog('Acceptation absence', id); addNotification(a.userId, 'Absence acceptée', 'success'); renderAbsences(); }
+            if (a) { a.statut = 'Acceptée';
+                await saveData(data);
+                await addLog('Acceptation absence', id);
+                addNotification(a.userId, 'Absence acceptée', 'success');
+                renderAbsences(); }
         };
         window.refuserAbsence = async function(id) {
             const data = await getData();
             const a = data.absences.find(a => a.id === id);
-            if (a) { a.statut = 'Refusée'; await saveData(data); await addLog('Refus absence', id); addNotification(a.userId, 'Absence refusée', 'danger'); renderAbsences(); }
+            if (a) { a.statut = 'Refusée';
+                await saveData(data);
+                await addLog('Refus absence', id);
+                addNotification(a.userId, 'Absence refusée', 'danger');
+                renderAbsences(); }
         };
         window.supprimerAbsence = async function(id) {
             if (!confirm('Supprimer ?')) return;
@@ -1378,7 +2320,10 @@
         window.toggleClotureSondage = async function(id) {
             const data = await getData();
             const s = data.sondages.find(s => s.id === id);
-            if (s) { s.cloture = !s.cloture; await saveData(data); await addLog('Toggle clôture sondage', s.titre); renderSondages(); }
+            if (s) { s.cloture = !s.cloture;
+                await saveData(data);
+                await addLog('Toggle clôture sondage', s.titre);
+                renderSondages(); }
         };
 
         // ================================================================
@@ -1440,12 +2385,13 @@
             const data = getDataSync();
             const user = getCurrentUser();
             const r = data.reunions.find(r => r.id === reunionId);
-            if (!r || r.statut==='cloture' || new Date(r.dateLimite) < new Date()) { alert('Réunion clôturée.'); return; }
+            if (!r || r.statut === 'cloture' || new Date(r.dateLimite) < new Date()) { alert('Réunion clôturée.'); return; }
             if (r.votes.some(v => v.userId === user.id)) { alert('Déjà voté.'); return; }
             const body = document.getElementById('modalBody');
             let html = `<h2>Voter - ${r.titre}</h2><form id="voteReunionForm">`;
             r.creneaux.forEach((c, idx) => {
-                html += `<div><input type="radio" name="creneau" value="${idx}" required> ${new Date(c.date).toLocaleDateString()} ${c.heure} (${c.duree} min)</div>`;
+                html +=
+                    `<div><input type="radio" name="creneau" value="${idx}" required> ${new Date(c.date).toLocaleDateString()} ${c.heure} (${c.duree} min)</div>`;
             });
             html += `<button type="submit" class="btn btn-primary btn-block">Voter</button></form>`;
             body.innerHTML = html;
@@ -1469,22 +2415,27 @@
         window.cloturerReunion = async function(id) {
             const data = await getData();
             const r = data.reunions.find(r => r.id === id);
-            if (r) { r.statut = r.statut==='cloture' ? 'ouverte' : 'cloture'; await saveData(data); await addLog('Toggle clôture réunion', r.titre); renderReunions(); }
+            if (r) { r.statut = r.statut === 'cloture' ? 'ouverte' : 'cloture';
+                await saveData(data);
+                await addLog('Toggle clôture réunion', r.titre);
+                renderReunions(); }
         };
         window.finaliserReunion = async function(id) {
             const data = await getData();
             const r = data.reunions.find(r => r.id === id);
-            if (!r || r.creneaux.length===0) { alert('Aucun créneau.'); return; }
+            if (!r || r.creneaux.length === 0) { alert('Aucun créneau.'); return; }
             const counts = r.creneaux.map((_, idx) => r.votes.filter(v => v.creneauIndex === idx).length);
             const max = Math.max(...counts);
             const gagneIdx = counts.indexOf(max);
             r.creneauGagne = gagneIdx;
             r.statut = 'cloture';
             const creneau = r.creneaux[gagneIdx];
-            data.agenda_events.push({ id:generateId(), titre:'Réunion: '+r.titre, date:creneau.date, heure:creneau.heure, lieu:'Salle à définir', couleur:'#4361ee' });
+            data.agenda_events.push({ id: generateId(), titre: 'Réunion: ' + r.titre, date: creneau.date,
+                heure: creneau.heure, lieu: 'Salle à définir', couleur: '#4361ee' });
             await saveData(data);
             await addLog('Finalisation réunion', r.titre);
-            addNotification(r.id, `Réunion "${r.titre}" planifiée le ${new Date(creneau.date).toLocaleDateString()} à ${creneau.heure}`, 'success');
+            addNotification(r.id, `Réunion "${r.titre}" planifiée le ${new Date(creneau.date).toLocaleDateString()} à ${creneau.heure}`,
+                'success');
             renderReunions();
             renderAgenda();
         };
@@ -1535,7 +2486,9 @@
         window.marquerAlerteLu = async function(id) {
             const data = await getData();
             const a = data.alertes.find(a => a.id === id);
-            if (a) { a.lu = true; await saveData(data); renderAlertes(); }
+            if (a) { a.lu = true;
+                await saveData(data);
+                renderAlertes(); }
         };
         window.supprimerAlerte = async function(id) {
             if (!confirm('Supprimer ?')) return;
@@ -1551,7 +2504,8 @@
         async function renderNotifications() {
             const data = await getData();
             const user = getCurrentUser();
-            const notifs = (data.notifications || []).filter(n => n.userId===user.id).sort((a,b)=>new Date(b.date)-new Date(a.date));
+            const notifs = (data.notifications || []).filter(n => n.userId === user.id).sort((a, b) => new Date(b.date) -
+                new Date(a.date));
             let html = `
                 <div class="flex-between mb-20">
                     <div><div class="page-title">Notifications</div></div>
@@ -1572,12 +2526,15 @@
         window.marquerLu = async function(id) {
             const data = await getData();
             const n = data.notifications.find(n => n.id === id);
-            if (n) { n.read = true; await saveData(data); renderNotifications(); updateNotifBadge(); }
+            if (n) { n.read = true;
+                await saveData(data);
+                renderNotifications();
+                updateNotifBadge(); }
         };
         window.marquerToutLu = async function() {
             const data = await getData();
             const user = getCurrentUser();
-            data.notifications.forEach(n => { if (n.userId===user.id) n.read = true; });
+            data.notifications.forEach(n => { if (n.userId === user.id) n.read = true; });
             await saveData(data);
             renderNotifications();
             updateNotifBadge();
@@ -1603,20 +2560,34 @@
             if (!q) { container.innerHTML = '<p class="text-muted">Saisissez un terme.</p>'; return; }
             const data = getDataSync();
             const results = [];
-            (data.users || []).forEach(u => { if ((u.nom+u.prenom+u.email).toLowerCase().includes(q)) results.push({type:'Utilisateur', label:u.prenom+' '+u.nom+' ('+u.email+')'}); });
-            (data.salles || []).forEach(s => { if ((s.nom+s.batiment+s.equipements).toLowerCase().includes(q)) results.push({type:'Salle', label:s.nom}); });
-            (data.documents || []).forEach(d => { if (d.nom.toLowerCase().includes(q)) results.push({type:'Document', label:d.nom}); });
-            (data.evenements || []).forEach(e => { if ((e.titre+e.description).toLowerCase().includes(q)) results.push({type:'Événement', label:e.titre}); });
-            (data.absences || []).forEach(a => { if ((a.motif+a.commentaire).toLowerCase().includes(q)) { const u = data.users.find(u => u.id===a.userId); results.push({type:'Absence', label:(u?u.prenom+' '+u.nom:'')+' - '+a.motif}); } });
-            (data.sondages || []).forEach(s => { if ((s.titre+s.description).toLowerCase().includes(q)) results.push({type:'Sondage', label:s.titre}); });
-            container.innerHTML = results.length ? results.map(r => `<div style="padding:6px 0; border-bottom:1px solid var(--gray-100);"><strong>${r.type}</strong> : ${r.label}</div>`).join('') : '<p class="text-muted">Aucun résultat.</p>';
+            (data.users || []).forEach(u => { if ((u.nom + u.prenom + u.email).toLowerCase().includes(q)) results.push({
+                    type: 'Utilisateur',
+                    label: u.prenom + ' ' + u.nom + ' (' + u.email + ')'
+                }); });
+            (data.salles || []).forEach(s => { if ((s.nom + s.batiment + s.equipements).toLowerCase().includes(q))
+                    results.push({ type: 'Salle', label: s.nom }); });
+            (data.documents || []).forEach(d => { if (d.nom.toLowerCase().includes(q)) results.push({ type: 'Document',
+                    label: d.nom }); });
+            (data.evenements || []).forEach(e => { if ((e.titre + e.description).toLowerCase().includes(q)) results
+                    .push({ type: 'Événement', label: e.titre }); });
+            (data.absences || []).forEach(a => { if ((a.motif + a.commentaire).toLowerCase().includes(q)) { const u =
+                        data.users.find(u => u.id === a.userId);
+                    results.push({ type: 'Absence', label: (u ? u.prenom + ' ' + u.nom : '') + ' - ' + a.motif }); } });
+            (data.sondages || []).forEach(s => { if ((s.titre + s.description).toLowerCase().includes(q)) results.push({
+                    type: 'Sondage',
+                    label: s.titre
+                }); });
+            container.innerHTML = results.length ? results.map(r =>
+                `<div style="padding:6px 0; border-bottom:1px solid var(--gray-100);"><strong>${r.type}</strong> : ${r.label}</div>`
+                ).join('') : '<p class="text-muted">Aucun résultat.</p>';
         };
 
         // ================================================================
         //  ADMIN
         // ================================================================
         async function renderAdmin() {
-            if (!isAdmin()) { document.getElementById('page-admin').innerHTML = '<p class="text-muted">Accès réservé.</p>'; return; }
+            if (!isAdmin()) { document.getElementById('page-admin').innerHTML =
+                    '<p class="text-muted">Accès réservé.</p>'; return; }
             const data = await getData();
             const users = data.users || [];
             const logs = data.logs || [];
@@ -1678,7 +2649,8 @@
         window.deleteUser = async function(id) {
             if (!confirm('Supprimer ?')) return;
             const data = await getData();
-            if (data.users.filter(u => u.role==='admin').length <= 1 && data.users.find(u => u.id===id)?.role==='admin') {
+            if (data.users.filter(u => u.role === 'admin').length <= 1 && data.users.find(u => u.id === id)?.role ===
+                'admin') {
                 alert('Impossible de supprimer le dernier admin.');
                 return;
             }
@@ -1690,15 +2662,21 @@
         window.toggleUserActive = async function(id) {
             const data = await getData();
             const u = data.users.find(u => u.id === id);
-            if (u) { u.active = !u.active; await saveData(data); await addLog('Toggle actif', u.email); renderAdmin(); }
+            if (u) { u.active = !u.active;
+                await saveData(data);
+                await addLog('Toggle actif', u.email);
+                renderAdmin(); }
         };
         window.resetPassword = async function(id) {
             const data = await getData();
             const u = data.users.find(u => u.id === id);
             if (!u) return;
-            const pwd = prompt('Nouveau mot de passe pour '+u.email+' :');
-            if (pwd && pwd.length >= 6) { u.password = pwd; await saveData(data); await addLog('Reset password', u.email); alert('Mot de passe mis à jour.'); renderAdmin(); }
-            else alert('Minimum 6 caractères.');
+            const pwd = prompt('Nouveau mot de passe pour ' + u.email + ' :');
+            if (pwd && pwd.length >= 6) { u.password = pwd;
+                await saveData(data);
+                await addLog('Reset password', u.email);
+                alert('Mot de passe mis à jour.');
+                renderAdmin(); } else alert('Minimum 6 caractères.');
         };
 
         // ================================================================
@@ -1736,7 +2714,11 @@
             document.getElementById('page-statistiques').innerHTML = html;
             setTimeout(() => {
                 const ctx = document.getElementById('statsChart')?.getContext('2d');
-                if (ctx) new Chart(ctx, { type:'line', data:{ labels:['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'], datasets:[{ label:'Connexions', data:[12,19,15,22,30,8,5], borderColor:'#4361ee', backgroundColor:'rgba(67,97,238,0.1)', fill:true }] }, options:{ responsive:true, maintainAspectRatio:false } });
+                if (ctx) new Chart(ctx, { type: 'line', data: { labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven',
+                            'Sam', 'Dim'
+                        ], datasets: [{ label: 'Connexions', data: [12, 19, 15, 22, 30, 8, 5],
+                            borderColor: '#4361ee', backgroundColor: 'rgba(67,97,238,0.1)', fill: true }] },
+                    options: { responsive: true, maintainAspectRatio: false } });
             }, 100);
         }
 
@@ -1744,7 +2726,8 @@
         //  PARAMETRES
         // ================================================================
         async function renderParametres() {
-            if (!isAdmin()) { document.getElementById('page-parametres').innerHTML = '<p class="text-muted">Accès réservé.</p>'; return; }
+            if (!isAdmin()) { document.getElementById('page-parametres').innerHTML =
+                    '<p class="text-muted">Accès réservé.</p>'; return; }
             const data = await getData();
             const s = data.settings || {};
             let html = `
@@ -1780,9 +2763,10 @@
                 data.settings.platformName = document.getElementById('setPlatformName').value;
                 data.settings.primaryColor = document.getElementById('setPrimaryColor').value;
                 data.settings.logo = document.getElementById('setLogo').value;
-                data.settings.security.sessionTimeout = parseInt(document.getElementById('setSessionTimeout').value) || 600;
+                data.settings.security.sessionTimeout = parseInt(document.getElementById('setSessionTimeout')
+                    .value) || 600;
                 Object.keys(data.settings.modules).forEach(key => {
-                    data.settings.modules[key] = document.getElementById('mod_'+key).checked;
+                    data.settings.modules[key] = document.getElementById('mod_' + key).checked;
                 });
                 await saveData(data);
                 await addLog('Modification paramètres');
@@ -1793,8 +2777,11 @@
         }
         window.exporterDonnees = function() {
             const data = getDataSync();
-            const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
-            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'ent_data_backup.json'; a.click();
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'ent_data_backup.json';
+            a.click();
             addLog('Export données');
         };
         window.importerFichier = function(event) {
@@ -1807,7 +2794,7 @@
                     await saveData(data);
                     alert('Importé. Rechargement...');
                     location.reload();
-                } catch(err) {
+                } catch (err) {
                     alert('Fichier invalide.');
                 }
             };
@@ -1825,7 +2812,8 @@
         //  DROITS
         // ================================================================
         async function renderDroits() {
-            if (!isAdmin()) { document.getElementById('page-droits').innerHTML = '<p class="text-muted">Accès réservé.</p>'; return; }
+            if (!isAdmin()) { document.getElementById('page-droits').innerHTML =
+                    '<p class="text-muted">Accès réservé.</p>'; return; }
             const data = await getData();
             const modules = Object.keys(data.settings.modules || {});
             const users = data.users || [];
@@ -1878,9 +2866,11 @@
                 const data = await getData();
                 const user2 = data.users.find(u => u.id === userId);
                 if (!user2) return;
-                user2.permissions[module] = { read: document.getElementById('dRead').checked, write: document.getElementById('dWrite').checked, delete: document.getElementById('dDelete').checked };
+                user2.permissions[module] = { read: document.getElementById('dRead').checked, write: document
+                        .getElementById('dWrite').checked, delete: document.getElementById('dDelete')
+                        .checked };
                 await saveData(data);
-                await addLog('Modification droits', user2.email+' - '+module);
+                await addLog('Modification droits', user2.email + ' - ' + module);
                 closeModal();
                 renderDroits();
             });
@@ -1944,6 +2934,7 @@
                 <p class="text-muted" style="margin-top:10px;">💡 Glissez-déposez les widgets pour les réorganiser.</p>
             `;
             document.getElementById('page-tableaudebord').innerHTML = html;
+            // Drag & drop
             const grid = document.getElementById('widgetsGrid');
             if (grid) {
                 let dragEl = null;
@@ -1972,10 +2963,12 @@
                             } else {
                                 this.parentNode.insertBefore(dragEl, this);
                             }
+                            // Sauvegarder l'ordre
                             const order = Array.from(parent.children).map(el => el.dataset.widgetId);
                             const data = getDataSync();
                             const widgets = data.widgets;
-                            const newOrder = order.map(id => widgets.find(w => w.id === id)).filter(Boolean);
+                            const newOrder = order.map(id => widgets.find(w => w.id === id)).filter(
+                            Boolean);
                             data.widgets = newOrder;
                             saveData(data);
                             addLog('Réorganisation des widgets');
@@ -2019,7 +3012,7 @@
                 const config = { titre };
                 if (type === 'notifications') config.nb = 5;
                 const data = await getData();
-                data.widgets.push({ id:generateId(), userId:user.id, type, config });
+                data.widgets.push({ id: generateId(), userId: user.id, type, config });
                 await saveData(data);
                 await addLog('Ajout widget', type);
                 closeModal();
@@ -2082,8 +3075,9 @@
         window.importerICS = async function() {
             const data = await getData();
             const user = getCurrentUser();
+            // Simulation d'import (parsing réel possible avec une librairie ICS)
             const now = new Date();
-            for (let i=0; i<5; i++) {
+            for (let i = 0; i < 5; i++) {
                 const d = new Date(now);
                 d.setDate(d.getDate() + i + 1);
                 data.edt_events.push({
@@ -2116,7 +3110,8 @@
         // ================================================================
         async function renderMaintenance() {
             if (!isAdmin()) {
-                document.getElementById('page-maintenance').innerHTML = '<p class="text-muted">Accès réservé aux administrateurs.</p>';
+                document.getElementById('page-maintenance').innerHTML =
+                    '<p class="text-muted">Accès réservé aux administrateurs.</p>';
                 return;
             }
             const data = await getData();
@@ -2147,7 +3142,8 @@
                 data.settings.maintenance.active = document.getElementById('maintenanceActive').checked;
                 data.settings.maintenance.message = document.getElementById('maintenanceMessage').value;
                 await saveData(data);
-                await addLog('Modification maintenance', data.settings.maintenance.active ? 'Activée' : 'Désactivée');
+                await addLog('Modification maintenance', data.settings.maintenance.active ? 'Activée' :
+                    'Désactivée');
                 alert('Paramètres de maintenance enregistrés.');
                 renderMaintenance();
                 render();
@@ -2157,7 +3153,7 @@
         // ================================================================
         //  MODALES (GÉNÉRIQUES)
         // ================================================================
-        function openModal(type, dataObj=null) {
+        function openModal(type, dataObj = null) {
             const overlay = document.getElementById('modalOverlay');
             const body = document.getElementById('modalBody');
             let html = '';
@@ -2183,16 +3179,25 @@
                     e.preventDefault();
                     const data = await getData();
                     const id = document.getElementById('userId').value;
-                    const nom = document.getElementById('uNom').value, prenom = document.getElementById('uPrenom').value;
-                    const email = document.getElementById('uEmail').value, password = document.getElementById('uPassword').value;
-                    const role = document.getElementById('uRole').value, discipline = document.getElementById('uDiscipline').value;
+                    const nom = document.getElementById('uNom').value,
+                        prenom = document.getElementById('uPrenom').value;
+                    const email = document.getElementById('uEmail').value,
+                        password = document.getElementById('uPassword').value;
+                    const role = document.getElementById('uRole').value,
+                        discipline = document.getElementById('uDiscipline').value;
                     const active = document.getElementById('uActive').value === 'true';
                     if (id) {
                         const u = data.users.find(u => u.id === id);
-                        if (u) { u.nom=nom; u.prenom=prenom; u.email=email; u.role=role; u.discipline=discipline; u.active=active; if(password) u.password=password; }
+                        if (u) { u.nom = nom;
+                            u.prenom = prenom;
+                            u.email = email;
+                            u.role = role;
+                            u.discipline = discipline;
+                            u.active = active; if (password) u.password = password; }
                     } else {
                         if (data.users.some(u => u.email === email)) { alert('Email déjà utilisé.'); return; }
-                        data.users.push({ id:generateId(), nom, prenom, email, password:password||'Temp123!', role, discipline, active, permissions:{} });
+                        data.users.push({ id: generateId(), nom, prenom, email, password: password || 'Temp123!',
+                            role, discipline, active, permissions: {} });
                     }
                     await saveData(data);
                     await addLog(id ? 'Modification utilisateur' : 'Création utilisateur', email);
@@ -2219,9 +3224,12 @@
                     const id = document.getElementById('docId').value;
                     const nom = document.getElementById('docNom').value;
                     const categorieId = document.getElementById('docCategorie').value;
-                    const perms = document.getElementById('docPermissions').value.split(',').map(s=>s.trim()).filter(Boolean);
-                    if (id) { const d = data.documents.find(d => d.id === id); if (d) { d.nom=nom; d.categorieId=categorieId; d.permissions=perms; } }
-                    else { data.documents.push({ id:generateId(), nom, categorieId, date:new Date().toISOString(), permissions:perms }); }
+                    const perms = document.getElementById('docPermissions').value.split(',').map(s => s.trim())
+                        .filter(Boolean);
+                    if (id) { const d = data.documents.find(d => d.id === id); if (d) { d.nom = nom;
+                            d.categorieId = categorieId;
+                            d.permissions = perms; } } else { data.documents.push({ id: generateId(), nom,
+                            categorieId, date: new Date().toISOString(), permissions: perms }); }
                     await saveData(data);
                     await addLog(id ? 'Modification document' : 'Ajout document', nom);
                     closeModal();
@@ -2246,11 +3254,21 @@
                     e.preventDefault();
                     const data = await getData();
                     const id = document.getElementById('evtId').value;
-                    const titre = document.getElementById('evtTitre').value, description = document.getElementById('evtDescription').value;
-                    const date = document.getElementById('evtDate').value, heure = document.getElementById('evtHeure').value;
-                    const lieu = document.getElementById('evtLieu').value, nbPlacesMax = parseInt(document.getElementById('evtPlaces').value)||0;
-                    if (id) { const evt = data.evenements.find(e => e.id === id); if (evt) { evt.titre=titre; evt.description=description; evt.date=date; evt.heure=heure; evt.lieu=lieu; evt.nbPlacesMax=nbPlacesMax; } }
-                    else { data.evenements.push({ id:generateId(), titre, description, date, heure, lieu, nbPlacesMax, cloture:false, dateCreation:new Date().toISOString() }); }
+                    const titre = document.getElementById('evtTitre').value,
+                        description = document.getElementById('evtDescription').value;
+                    const date = document.getElementById('evtDate').value,
+                        heure = document.getElementById('evtHeure').value;
+                    const lieu = document.getElementById('evtLieu').value,
+                        nbPlacesMax = parseInt(document.getElementById('evtPlaces').value) || 0;
+                    if (id) { const evt = data.evenements.find(e => e.id === id); if (evt) { evt.titre =
+                            titre;
+                            evt.description = description;
+                            evt.date = date;
+                            evt.heure = heure;
+                            evt.lieu = lieu;
+                            evt.nbPlacesMax = nbPlacesMax; } } else { data.evenements.push({ id: generateId(),
+                            titre, description, date, heure, lieu, nbPlacesMax, cloture: false,
+                            dateCreation: new Date().toISOString() }); }
                     await saveData(data);
                     await addLog(id ? 'Modification événement' : 'Création événement', titre);
                     closeModal();
@@ -2275,11 +3293,19 @@
                     e.preventDefault();
                     const data = await getData();
                     const id = document.getElementById('salleId').value;
-                    const nom = document.getElementById('salleNom').value, capacite = parseInt(document.getElementById('salleCapacite').value)||0;
-                    const equipements = document.getElementById('salleEquip').value, batiment = document.getElementById('salleBatiment').value;
-                    const etage = document.getElementById('salleEtage').value, disponible = document.getElementById('salleDispo').value === 'true';
-                    if (id) { const s = data.salles.find(s => s.id === id); if (s) { s.nom=nom; s.capacite=capacite; s.equipements=equipements; s.batiment=batiment; s.etage=etage; s.disponible=disponible; } }
-                    else { data.salles.push({ id:generateId(), nom, capacite, equipements, batiment, etage, disponible }); }
+                    const nom = document.getElementById('salleNom').value,
+                        capacite = parseInt(document.getElementById('salleCapacite').value) || 0;
+                    const equipements = document.getElementById('salleEquip').value,
+                        batiment = document.getElementById('salleBatiment').value;
+                    const etage = document.getElementById('salleEtage').value,
+                        disponible = document.getElementById('salleDispo').value === 'true';
+                    if (id) { const s = data.salles.find(s => s.id === id); if (s) { s.nom = nom;
+                            s.capacite = capacite;
+                            s.equipements = equipements;
+                            s.batiment = batiment;
+                            s.etage = etage;
+                            s.disponible = disponible; } } else { data.salles.push({ id: generateId(),
+                            nom, capacite, equipements, batiment, etage, disponible }); }
                     await saveData(data);
                     await addLog(id ? 'Modification salle' : 'Ajout salle', nom);
                     closeModal();
@@ -2301,9 +3327,12 @@
                     e.preventDefault();
                     const data = await getData();
                     const user = getCurrentUser();
-                    const date = document.getElementById('absDate').value, heure = document.getElementById('absHeure').value;
-                    const motif = document.getElementById('absMotif').value, commentaire = document.getElementById('absCommentaire').value;
-                    data.absences.push({ id:generateId(), userId:user.id, date, heure, motif, commentaire, statut:'En attente', dateCreation:new Date().toISOString() });
+                    const date = document.getElementById('absDate').value,
+                        heure = document.getElementById('absHeure').value;
+                    const motif = document.getElementById('absMotif').value,
+                        commentaire = document.getElementById('absCommentaire').value;
+                    data.absences.push({ id: generateId(), userId: user.id, date, heure, motif, commentaire,
+                        statut: 'En attente', dateCreation: new Date().toISOString() });
                     await saveData(data);
                     await addLog('Déclaration absence', motif);
                     addNotification(user.id, 'Absence déclarée, en attente.', 'info');
@@ -2326,10 +3355,12 @@
                 document.getElementById('agendaEventFormModal').addEventListener('submit', async function(e) {
                     e.preventDefault();
                     const data = await getData();
-                    const titre = document.getElementById('agTitre').value, date = document.getElementById('agDate').value;
-                    const heure = document.getElementById('agHeure').value, lieu = document.getElementById('agLieu').value;
+                    const titre = document.getElementById('agTitre').value,
+                        date = document.getElementById('agDate').value;
+                    const heure = document.getElementById('agHeure').value,
+                        lieu = document.getElementById('agLieu').value;
                     const couleur = document.getElementById('agCouleur').value;
-                    data.agenda_events.push({ id:generateId(), titre, date, heure, lieu, couleur });
+                    data.agenda_events.push({ id: generateId(), titre, date, heure, lieu, couleur });
                     await saveData(data);
                     await addLog('Ajout agenda', titre);
                     closeModal();
@@ -2355,16 +3386,23 @@
                     e.preventDefault();
                     const data = await getData();
                     const id = document.getElementById('sondageId').value;
-                    const titre = document.getElementById('sTitre').value, description = document.getElementById('sDesc').value;
+                    const titre = document.getElementById('sTitre').value,
+                        description = document.getElementById('sDesc').value;
                     const dateFin = document.getElementById('sDateFin').value;
-                    const questionsRaw = document.getElementById('sQuestions').value.split('\n').filter(Boolean);
+                    const questionsRaw = document.getElementById('sQuestions').value.split('\n').filter(
+                    Boolean);
                     const questions = questionsRaw.map(line => {
-                        const parts = line.split('|').map(s=>s.trim());
-                        return { texte: parts[0], type: parts.length>2?'multiple':'binaire', options: parts.slice(1).filter(Boolean) };
+                        const parts = line.split('|').map(s => s.trim());
+                        return { texte: parts[0], type: parts.length > 2 ? 'multiple' : 'binaire',
+                            options: parts.slice(1).filter(Boolean) };
                     });
                     if (!questions.length) { alert('Au moins une question.'); return; }
-                    if (id) { const s = data.sondages.find(s => s.id === id); if (s) { s.titre=titre; s.description=description; s.dateFin=dateFin; s.questions=questions; } }
-                    else { data.sondages.push({ id:generateId(), titre, description, dateFin, questions, votes:[], cloture:false, dateCreation:new Date().toISOString() }); }
+                    if (id) { const s = data.sondages.find(s => s.id === id); if (s) { s.titre = titre;
+                            s.description = description;
+                            s.dateFin = dateFin;
+                            s.questions = questions; } } else { data.sondages.push({ id: generateId(),
+                            titre, description, dateFin, questions, votes: [], cloture: false,
+                            dateCreation: new Date().toISOString() }); }
                     await saveData(data);
                     await addLog(id ? 'Modification sondage' : 'Création sondage', titre);
                     closeModal();
@@ -2386,9 +3424,12 @@
                     e.preventDefault();
                     const data = await getData();
                     const user = getCurrentUser();
-                    const titre = document.getElementById('aTitre').value, message = document.getElementById('aMessage').value;
-                    const date = document.getElementById('aDate').value, heure = document.getElementById('aHeure').value;
-                    data.alertes.push({ id:generateId(), userId:user.id, titre, message, date, heure, lu:false, dateCreation:new Date().toISOString() });
+                    const titre = document.getElementById('aTitre').value,
+                        message = document.getElementById('aMessage').value;
+                    const date = document.getElementById('aDate').value,
+                        heure = document.getElementById('aHeure').value;
+                    data.alertes.push({ id: generateId(), userId: user.id, titre, message, date, heure,
+                        lu: false, dateCreation: new Date().toISOString() });
                     await saveData(data);
                     await addLog('Création alerte', titre);
                     addNotification(user.id, `Alerte "${titre}" créée.`, 'info');
@@ -2415,16 +3456,23 @@
                     e.preventDefault();
                     const data = await getData();
                     const id = document.getElementById('reunionId').value;
-                    const titre = document.getElementById('rTitre').value, description = document.getElementById('rDesc').value;
+                    const titre = document.getElementById('rTitre').value,
+                        description = document.getElementById('rDesc').value;
                     const dateLimite = document.getElementById('rDateLimite').value;
-                    const creneauxRaw = document.getElementById('rCreneaux').value.split('\n').filter(Boolean);
+                    const creneauxRaw = document.getElementById('rCreneaux').value.split('\n').filter(
+                    Boolean);
                     const creneaux = creneauxRaw.map(line => {
                         const parts = line.split(' ');
-                        return { date: parts[0], heure: parts[1]||'12:00', duree: parseInt(parts[2])||60 };
+                        return { date: parts[0], heure: parts[1] || '12:00', duree: parseInt(parts[
+                            2]) || 60 };
                     });
                     if (!creneaux.length) { alert('Au moins un créneau.'); return; }
-                    if (id) { const r = data.reunions.find(r => r.id === id); if (r) { r.titre=titre; r.description=description; r.dateLimite=dateLimite; r.creneaux=creneaux; } }
-                    else { data.reunions.push({ id:generateId(), titre, description, dateLimite, creneaux, votes:[], statut:'ouverte', creneauGagne:null, dateCreation:new Date().toISOString() }); }
+                    if (id) { const r = data.reunions.find(r => r.id === id); if (r) { r.titre = titre;
+                            r.description = description;
+                            r.dateLimite = dateLimite;
+                            r.creneaux = creneaux; } } else { data.reunions.push({ id: generateId(),
+                            titre, description, dateLimite, creneaux, votes: [], statut: 'ouverte',
+                            creneauGagne: null, dateCreation: new Date().toISOString() }); }
                     await saveData(data);
                     await addLog(id ? 'Modification réunion' : 'Création réunion', titre);
                     closeModal();
@@ -2464,15 +3512,18 @@
         // ================================================================
         //  SCRIPT DE SECOURS POUR LA CONSOLE (connexion forcée)
         // ================================================================
-        console.log('%c🔐 SCRIPT DE SECOURS : copiez ceci dans la console pour vous connecter en admin', 'font-size:16px; background:#f9a825; color:#212529; padding:4px 10px; border-radius:4px;');
+        console.log('%c🔐 SCRIPT DE SECOURS : copiez ceci dans la console pour vous connecter en admin',
+            'font-size:16px; background:#f9a825; color:#212529; padding:4px 10px; border-radius:4px;');
         console.log(`(async function() {
+            // Forcer la session admin
             const data = await (async () => {
                 const raw = localStorage.getItem('ent_data');
                 if (raw) return JSON.parse(raw);
                 return { users: [{ id: 'admin', nom: 'Admin', prenom: 'Super', email: 'admin@college.fr', password: 'Admin123!', role: 'admin', active: true, permissions: {} }] };
             })();
-            localStorage.setItem('ent_session', JSON.stringify({ userId: 'admin', expiry: Date.now() + 3600000 }));
-            alert('🔓 Connecté en tant que admin@college.fr');
+            const admin = data.users.find(u => u.role === 'admin') || data.users[0];
+            localStorage.setItem('ent_session', JSON.stringify({ userId: admin.id, expiry: Date.now() + 3600000 }));
+            alert('🔓 Connecté en tant que ' + admin.email);
             location.reload();
         })();`);
 
@@ -2481,7 +3532,7 @@
         // ================================================================
         (async function() {
             await initData();
-            const session = JSON.parse(localStorage.getItem('ent_session')||'null');
+            const session = JSON.parse(localStorage.getItem('ent_session') || 'null');
             if (session) {
                 const data = await getData();
                 const user = data.users.find(u => u.id === session.userId);
@@ -2502,14 +3553,16 @@
                 document.getElementById('sidebar').classList.toggle('open');
             });
 
-            console.log('✅ ENT Collège avec Firestore connecté.');
+            console.log('✅ ENT Collège avec Firestore (synchronisation temps réel) prêt.');
             console.log('📌 Admin: admin@college.fr / Admin123!');
             console.log('🔑 Secours: Ctrl+Alt+D ou bouton en bas à droite');
             console.log('🛠️ Pour une connexion forcée, copiez le script de secours affiché ci-dessus.');
         })();
 
+        // Fonction d'initialisation
         async function initData() {
-            const data = await loadData();
+            const data = await loadDataAsync();
+            // Vérifier les clés manquantes
             const defaultData = getDefaultData();
             for (let key in defaultData) {
                 if (!data.hasOwnProperty(key) || !Array.isArray(data[key])) {
@@ -2525,7 +3578,8 @@
                 const modules = Object.keys(data.settings.modules);
                 modules.forEach(m => {
                     if (!admin.permissions) admin.permissions = {};
-                    if (!admin.permissions[m]) admin.permissions[m] = { read: true, write: true, delete: true };
+                    if (!admin.permissions[m]) admin.permissions[m] = { read: true, write: true,
+                    delete: true };
                 });
             }
             await saveData(data);
