@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>ENT Collège - Plateforme Enseignants</title>
-    <!-- Firebase SDK (compat pour script) -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js">
     </script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js">
@@ -14,7 +14,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
     </script>
     <style>
-        /* --- CSS complet --- */
+        /* ===== CSS COMPLET (identique à la version précédente) ===== */
         :root {
             --primary: #4361ee;
             --primary-light: #6c8cff;
@@ -282,6 +282,19 @@
             display: flex;
             align-items: center;
             gap: 20px;
+        }
+        #header .right .sync-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--gray-500);
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: var(--gray-100);
+        }
+        #header .right .sync-indicator .fa-spin {
+            color: var(--primary);
         }
         #header .right .notification-bell {
             position: relative;
@@ -810,19 +823,6 @@
             border-radius: var(--border-radius);
             margin-bottom: 20px;
         }
-        .sync-indicator {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 12px;
-            color: var(--gray-500);
-            padding: 4px 12px;
-            border-radius: 20px;
-            background: var(--gray-100);
-        }
-        .sync-indicator .fa-spin {
-            color: var(--primary);
-        }
         @media (max-width:1024px) {
             .grid-4 {
                 grid-template-columns: 1fr 1fr;
@@ -1011,7 +1011,7 @@
 
     <script>
         // ================================================================
-        //  CONFIGURATION FIREBASE (fournie par l'utilisateur)
+        //  CONFIGURATION FIREBASE
         // ================================================================
         const firebaseConfig = {
             apiKey: "AIzaSyAPE0DhujXsx3Rmf2T1nYXsRFUQcVsrq6w",
@@ -1022,20 +1022,19 @@
             appId: "1:1060096783609:web:115a4c7f3648ace8de5e28"
         };
 
-        // Initialisation Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const COLLECTION = 'ent_data';
         let useFirestore = true;
-        console.log('✅ Firestore connecté avec succès.');
+
+        console.log('✅ Firestore connecté.');
 
         // ================================================================
-        //  COUCHES D'ACCÈS AUX DONNÉES AVEC SYNCHRONISATION EN TEMPS RÉEL
+        //  COUCHES D'ACCÈS AUX DONNÉES AVEC SYNCHRONISATION TEMPS RÉEL
         // ================================================================
         let currentData = null;
         let dataListeners = [];
         let isSyncing = false;
-        let syncCallbacks = [];
 
         function notifySync() {
             document.getElementById('syncIndicator').innerHTML =
@@ -1047,13 +1046,10 @@
             document.getElementById('syncIndicator').innerHTML =
                 '<i class="fas fa-check-circle" style="color:var(--success);"></i> Synchronisé';
             isSyncing = false;
-            syncCallbacks.forEach(cb => cb());
-            syncCallbacks = [];
         }
 
-        // Écoute en temps réel sur Firestore
+        // Écoute en temps réel
         function startRealtimeListener() {
-            // Se désabonner des anciens listeners
             dataListeners.forEach(unsub => unsub());
             dataListeners = [];
 
@@ -1063,7 +1059,6 @@
                     try {
                         if (doc.exists) {
                             const data = doc.data();
-                            // Vérifier les clés manquantes
                             const defaultData = getDefaultData();
                             for (let key in defaultData) {
                                 if (!data.hasOwnProperty(key) || !Array.isArray(data[key])) {
@@ -1075,13 +1070,11 @@
                             if (!data.settings.security) data.settings.security = defaultData.settings.security;
                             if (!data.settings.maintenance) data.settings.maintenance = defaultData.settings
                             .maintenance;
-                            // Mettre à jour le cache
                             currentData = data;
                             window._cachedData = data;
-                            // Sauvegarder aussi en localStorage pour fallback
                             localStorage.setItem('ent_data', JSON.stringify(data));
                             notifySyncDone();
-                            // Re-rendre la page courante si l'utilisateur est connecté
+                            // Re-render la page active
                             const user = getCurrentUser();
                             if (user) {
                                 const activePage = document.querySelector('.page-section.active');
@@ -1092,7 +1085,6 @@
                                 }
                             }
                         } else {
-                            // Créer le document avec les données par défaut
                             const defaultData = getDefaultData();
                             await db.collection(COLLECTION).doc('main').set(defaultData);
                             currentData = defaultData;
@@ -1103,11 +1095,16 @@
                     } catch (e) {
                         console.error('Erreur synchro:', e);
                         notifySyncDone();
+                        // fallback localStorage
+                        const raw = localStorage.getItem('ent_data');
+                        if (raw) {
+                            currentData = JSON.parse(raw);
+                            window._cachedData = currentData;
+                        }
                     }
                 }, (error) => {
                     console.error('Erreur listener:', error);
                     notifySyncDone();
-                    // Fallback sur localStorage
                     const raw = localStorage.getItem('ent_data');
                     if (raw) {
                         currentData = JSON.parse(raw);
@@ -1118,7 +1115,6 @@
             dataListeners.push(unsub);
         }
 
-        // Fonction pour sauvegarder dans Firestore
         async function saveDataToFirestore(data) {
             notifySync();
             try {
@@ -1130,7 +1126,6 @@
                 return true;
             } catch (e) {
                 console.error('Erreur sauvegarde Firestore:', e);
-                // Fallback sur localStorage
                 localStorage.setItem('ent_data', JSON.stringify(data));
                 currentData = data;
                 window._cachedData = data;
@@ -1139,7 +1134,6 @@
             }
         }
 
-        // Fonction de chargement des données (synchrone pour compatibilité)
         function loadDataSync() {
             if (currentData) return currentData;
             const raw = localStorage.getItem('ent_data');
@@ -1148,15 +1142,12 @@
                     currentData = JSON.parse(raw);
                     window._cachedData = currentData;
                     return currentData;
-                } catch (e) {
-                    // fallback
-                }
+                } catch (e) { /* ignore */ }
             }
             const defaultData = getDefaultData();
             currentData = defaultData;
             window._cachedData = defaultData;
             localStorage.setItem('ent_data', JSON.stringify(defaultData));
-            // Tenter de sauvegarder dans Firestore en arrière-plan
             db.collection(COLLECTION).doc('main').set(defaultData).catch(() => {});
             return defaultData;
         }
@@ -1211,10 +1202,8 @@
             await saveDataToFirestore(data);
         }
 
-        // Fonction d'initialisation des données
         async function initData() {
             const data = await loadDataAsync();
-            // Vérifier les clés manquantes
             const defaultData = getDefaultData();
             for (let key in defaultData) {
                 if (!data.hasOwnProperty(key) || !Array.isArray(data[key])) {
@@ -1236,7 +1225,6 @@
             await saveData(data);
             currentData = data;
             window._cachedData = data;
-            // Démarrer l'écoute en temps réel
             startRealtimeListener();
         }
 
@@ -1547,70 +1535,698 @@
             }
         }
 
-        function renderPage(page) {
-            switch (page) {
-                case 'dashboard':
-                    renderDashboard();
-                    break;
-                case 'documents':
-                    renderDocuments();
-                    break;
-                case 'inscriptions':
-                    renderInscriptions();
-                    break;
-                case 'agenda':
-                    renderAgenda();
-                    break;
-                case 'salles':
-                    renderSalles();
-                    break;
-                case 'absences':
-                    renderAbsences();
-                    break;
-                case 'sondages':
-                    renderSondages();
-                    break;
-                case 'reunions':
-                    renderReunions();
-                    break;
-                case 'alertes':
-                    renderAlertes();
-                    break;
-                case 'notifications':
-                    renderNotifications();
-                    break;
-                case 'recherche':
-                    renderRecherche();
-                    break;
-                case 'admin':
-                    renderAdmin();
-                    break;
-                case 'statistiques':
-                    renderStatistiques();
-                    break;
-                case 'parametres':
-                    renderParametres();
-                    break;
-                case 'droits':
-                    renderDroits();
-                    break;
-                case 'tableaudebord':
-                    renderTableauDeBord();
-                    break;
-                case 'edt':
-                    renderEDT();
-                    break;
-                case 'maintenance':
-                    renderMaintenance();
-                    break;
-                default:
-                    document.getElementById('page-dashboard').innerHTML = '<p class="text-muted">Page en construction</p>';
+        // ================================================================
+        //  DÉCLARATION DE TOUTES LES FONCTIONS GLOBALES (Boutons)
+        //  Nous allons définir toutes les fonctions utilisées dans les onclick
+        // ================================================================
+
+        // --- Filtres documents ---
+        window.filterDocs = function() {
+            const s = document.getElementById('docSearch')?.value.toLowerCase() || '';
+            const c = document.getElementById('docCategoryFilter')?.value || '';
+            document.querySelectorAll('#docTableBody tr').forEach(row => {
+                const text = row.textContent.toLowerCase();
+                const cat = row.dataset.cat || '';
+                let show = true;
+                if (s && !text.includes(s)) show = false;
+                if (c && cat !== c) show = false;
+                row.style.display = show ? '' : 'none';
+            });
+        };
+
+        window.downloadDoc = function(id) {
+            const data = getDataSync();
+            const d = data.documents.find(d => d.id === id);
+            if (d) { alert(`Téléchargement de "${d.nom}" (simulé)`);
+                addLog('Téléchargement document', d.nom); }
+        };
+
+        window.deleteDocument = async function(id) {
+            if (!confirm('Supprimer ?')) return;
+            const data = await getData();
+            data.documents = data.documents.filter(d => d.id !== id);
+            await saveData(data);
+            await addLog('Suppression document', id);
+            renderDocuments();
+        };
+
+        window.editDocument = function(id) {
+            const data = getDataSync();
+            const d = data.documents.find(d => d.id === id);
+            if (d) openModal('documentForm', d);
+        };
+
+        // --- Inscriptions ---
+        window.sinscrire = async function(id) {
+            const data = await getData();
+            const user = getCurrentUser();
+            const evt = data.evenements.find(e => e.id === id);
+            if (!evt) return;
+            const inscrits = data.inscriptions.filter(i => i.evenementId === id);
+            if (evt.nbPlacesMax && inscrits.length >= evt.nbPlacesMax) { alert('Places épuisées.'); return; }
+            if (data.inscriptions.some(i => i.evenementId === id && i.userId === user.id)) { alert('Déjà inscrit.'); return; }
+            data.inscriptions.push({ id: generateId(), evenementId: id, userId: user.id, userNom: user.prenom + ' ' + user
+                    .nom, date: new Date().toISOString(), statut: 'En attente' });
+            await saveData(data);
+            await addLog('Inscription', evt.titre);
+            addNotification(user.id, `Inscrit à "${evt.titre}"`, 'success');
+            renderInscriptions();
+        };
+
+        window.desinscrire = async function(id) {
+            if (!confirm('Se désinscrire ?')) return;
+            const data = await getData();
+            const user = getCurrentUser();
+            data.inscriptions = data.inscriptions.filter(i => !(i.evenementId === id && i.userId === user.id));
+            await saveData(data);
+            await addLog('Désinscription', id);
+            renderInscriptions();
+        };
+
+        window.deleteEvenement = async function(id) {
+            if (!confirm('Supprimer ?')) return;
+            const data = await getData();
+            data.evenements = data.evenements.filter(e => e.id !== id);
+            data.inscriptions = data.inscriptions.filter(i => i.evenementId !== id);
+            await saveData(data);
+            await addLog('Suppression événement', id);
+            renderInscriptions();
+        };
+
+        window.editEvenement = function(id) {
+            const data = getDataSync();
+            const evt = data.evenements.find(e => e.id === id);
+            if (evt) openModal('evenementForm', evt);
+        };
+
+        window.toggleCloture = async function(id) {
+            const data = await getData();
+            const evt = data.evenements.find(e => e.id === id);
+            if (evt) { evt.cloture = !evt.cloture;
+                await saveData(data);
+                await addLog('Clôture/réouverture', evt.titre);
+                renderInscriptions(); }
+        };
+
+        window.exporterListe = function(id) {
+            const data = getDataSync();
+            const evt = data.evenements.find(e => e.id === id);
+            if (!evt) return;
+            const inscrits = data.inscriptions.filter(i => i.evenementId === id);
+            const csv = inscrits.map(i => i.userNom).join('\n');
+            const blob = new Blob([`Liste "${evt.titre}"\n${csv}`], { type: 'text/csv' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `inscrits_${evt.titre}.csv`;
+            a.click();
+            addLog('Export liste', evt.titre);
+        };
+
+        // --- Agenda ---
+        window.setAgendaView = function(view) {
+            document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.tabs .tab[data-view="${view}"]`)?.classList.add('active');
+            const container = document.getElementById('agendaView');
+            const data = getDataSync();
+            const events = data.agenda_events || [];
+            if (view === 'jour') {
+                const today = new Date().toDateString();
+                const dayEvents = events.filter(e => new Date(e.date).toDateString() === today);
+                container.innerHTML = `<div class="card">
+                    <h4>Événements du ${new Date().toLocaleDateString()}</h4>
+                    ${dayEvents.length ? dayEvents.map(e => `
+                        <div style="border-left:4px solid ${e.couleur||'#4361ee'}; padding:8px 12px; margin:6px 0; background:var(--gray-50); border-radius:8px;">
+                            <strong>${e.titre}</strong> - ${e.heure||''} ${e.lieu ? '📍 '+e.lieu : ''}
+                            ${isAdmin() ? `<button class="btn btn-sm btn-danger" onclick="deleteAgendaEvent('${e.id}')"><i class="fas fa-trash"></i></button>` : ''}
+                        </div>
+                    `).join('') : '<p class="text-muted">Aucun événement.</p>'}
+                </div>`;
+            } else if (view === 'semaine') {
+                const today = new Date();
+                let html = `<div class="card"><h4>Semaine du ${today.toLocaleDateString()}</h4>`;
+                for (let i = 0; i < 7; i++) {
+                    const d = new Date(today);
+                    d.setDate(d.getDate() + i);
+                    const dayEvents = events.filter(e => new Date(e.date).toDateString() === d.toDateString());
+                    html += `<div style="padding:6px 12px; background:var(--gray-50); border-radius:6px; margin:4px 0;">
+                        <strong>${d.toLocaleDateString()}</strong> : ${dayEvents.length ? dayEvents.map(e=>e.titre).join(', ') : 'Aucun'}
+                    </div>`;
+                }
+                html += '</div>';
+                container.innerHTML = html;
+            } else if (view === 'mois') {
+                const mois = ['Janv', 'Févr', 'Mars', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sept', 'Oct', 'Nov', 'Déc'];
+                const now = new Date();
+                const year = now.getFullYear(),
+                    month = now.getMonth();
+                const firstDay = new Date(year, month, 1).getDay();
+                const days = new Date(year, month + 1, 0).getDate();
+                let html = `<div class="card"><h4>${mois[month]} ${year}</h4><div class="calendar-grid">`;
+                const jours = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+                for (let j of jours) html += `<div class="day day-header">${j}</div>`;
+                for (let i = 0; i < (firstDay === 0 ? 6 : firstDay - 1); i++) html += `<div class="day"></div>`;
+                for (let d = 1; d <= days; d++) {
+                    const dateObj = new Date(year, month, d);
+                    const hasEvent = events.some(e => new Date(e.date).toDateString() === dateObj.toDateString());
+                    html += `<div class="day day-number ${hasEvent?'has-event':''}">${d}</div>`;
+                }
+                html += '</div></div>';
+                container.innerHTML = html;
             }
-        }
+        };
+
+        window.deleteAgendaEvent = async function(id) {
+            if (!confirm('Supprimer ?')) return;
+            const data = await getData();
+            data.agenda_events = data.agenda_events.filter(e => e.id !== id);
+            await saveData(data);
+            await addLog('Suppression agenda', id);
+            renderAgenda();
+        };
+
+        // --- Salles ---
+        window.reserverSalle = async function(salleId) {
+            const data = await getData();
+            const user = getCurrentUser();
+            const date = prompt('Date (JJ/MM/AAAA) :');
+            if (!date) return;
+            const heure = prompt('Heure (HH:MM) :');
+            if (!heure) return;
+            const salle = data.salles.find(s => s.id === salleId);
+            if (salle && salle.disponible === false) { alert('Salle indisponible.'); return; }
+            if (data.reservations.some(r => r.salleId === salleId && r.date === date && r.heure === heure && r.statut !==
+                    'Refusée')) {
+                alert('Conflit détecté.');
+                return;
+            }
+            data.reservations.push({ id: generateId(), salleId, userId: user.id, date, heure, statut: 'En attente',
+                dateCreation: new Date().toISOString() });
+            await saveData(data);
+            await addLog('Réservation salle', salleId);
+            addNotification(user.id, `Demande de réservation ${salle.nom} le ${date} à ${heure}`, 'info');
+            renderSalles();
+        };
+
+        window.annulerReservation = async function(id) {
+            if (!confirm('Annuler ?')) return;
+            const data = await getData();
+            data.reservations = data.reservations.filter(r => r.id !== id);
+            await saveData(data);
+            await addLog('Annulation réservation', id);
+            renderSalles();
+        };
+
+        window.approuverReservation = async function(id) {
+            const data = await getData();
+            const r = data.reservations.find(r => r.id === id);
+            if (r) { r.statut = 'Approuvée';
+                await saveData(data);
+                await addLog('Approbation réservation', id);
+                addNotification(r.userId, 'Réservation approuvée', 'success');
+                renderSalles(); }
+        };
+
+        window.refuserReservation = async function(id) {
+            const data = await getData();
+            const r = data.reservations.find(r => r.id === id);
+            if (r) { r.statut = 'Refusée';
+                await saveData(data);
+                await addLog('Refus réservation', id);
+                addNotification(r.userId, 'Réservation refusée', 'danger');
+                renderSalles(); }
+        };
+
+        window.supprimerReservation = async function(id) {
+            if (!confirm('Supprimer ?')) return;
+            const data = await getData();
+            data.reservations = data.reservations.filter(r => r.id !== id);
+            await saveData(data);
+            await addLog('Suppression réservation', id);
+            renderSalles();
+        };
+
+        window.deleteSalle = async function(id) {
+            if (!confirm('Supprimer ?')) return;
+            const data = await getData();
+            data.salles = data.salles.filter(s => s.id !== id);
+            await saveData(data);
+            await addLog('Suppression salle', id);
+            renderSalles();
+        };
+
+        window.editSalle = function(id) {
+            const data = getDataSync();
+            const s = data.salles.find(s => s.id === id);
+            if (s) openModal('salleForm', s);
+        };
+
+        window.toggleDispoSalle = async function(id) {
+            const data = await getData();
+            const s = data.salles.find(s => s.id === id);
+            if (s) { s.disponible = s.disponible === false ? true : false;
+                await saveData(data);
+                await addLog('Toggle disponibilité', s.nom);
+                renderSalles(); }
+        };
+
+        // --- Absences ---
+        window.accepterAbsence = async function(id) {
+            const data = await getData();
+            const a = data.absences.find(a => a.id === id);
+            if (a) { a.statut = 'Acceptée';
+                await saveData(data);
+                await addLog('Acceptation absence', id);
+                addNotification(a.userId, 'Absence acceptée', 'success');
+                renderAbsences(); }
+        };
+
+        window.refuserAbsence = async function(id) {
+            const data = await getData();
+            const a = data.absences.find(a => a.id === id);
+            if (a) { a.statut = 'Refusée';
+                await saveData(data);
+                await addLog('Refus absence', id);
+                addNotification(a.userId, 'Absence refusée', 'danger');
+                renderAbsences(); }
+        };
+
+        window.supprimerAbsence = async function(id) {
+            if (!confirm('Supprimer ?')) return;
+            const data = await getData();
+            data.absences = data.absences.filter(a => a.id !== id);
+            await saveData(data);
+            await addLog('Suppression absence', id);
+            renderAbsences();
+        };
+
+        // --- Sondages ---
+        window.voterSondage = function(sondageId) {
+            const data = getDataSync();
+            const user = getCurrentUser();
+            const s = data.sondages.find(s => s.id === sondageId);
+            if (!s || s.cloture || new Date(s.dateFin) < new Date()) { alert('Sondage clôturé.'); return; }
+            if (s.votes.some(v => v.userId === user.id)) { alert('Déjà voté.'); return; }
+            const body = document.getElementById('modalBody');
+            let html = `<h2>Voter : ${s.titre}</h2><form id="voteForm">`;
+            s.questions.forEach((q, idx) => {
+                html += `<div class="form-group"><label>${q.texte}</label>`;
+                q.options.forEach((opt, oi) => {
+                    html += `<div><input type="radio" name="q${idx}" value="${oi}" required> ${opt}</div>`;
+                });
+                html += `</div>`;
+            });
+            html += `<button type="submit" class="btn btn-primary btn-block">Envoyer</button></form>`;
+            body.innerHTML = html;
+            document.getElementById('modalOverlay').classList.add('active');
+            document.getElementById('voteForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const reponses = {};
+                s.questions.forEach((q, idx) => {
+                    const val = document.querySelector(`input[name="q${idx}"]:checked`);
+                    if (val) reponses[idx] = parseInt(val.value);
+                });
+                if (Object.keys(reponses).length !== s.questions.length) { alert('Répondez à tout.'); return; }
+                const data = await getData();
+                const s2 = data.sondages.find(s => s.id === sondageId);
+                if (!s2) return;
+                s2.votes.push({ userId: user.id, reponses, date: new Date().toISOString() });
+                await saveData(data);
+                await addLog('Vote sondage', s2.titre);
+                addNotification(user.id, `Vote dans "${s2.titre}"`, 'success');
+                closeModal();
+                renderSondages();
+            });
+        };
+
+        window.deleteSondage = async function(id) {
+            if (!confirm('Supprimer ?')) return;
+            const data = await getData();
+            data.sondages = data.sondages.filter(s => s.id !== id);
+            await saveData(data);
+            await addLog('Suppression sondage', id);
+            renderSondages();
+        };
+
+        window.editSondage = function(id) {
+            const data = getDataSync();
+            const s = data.sondages.find(s => s.id === id);
+            if (s) openModal('sondageForm', s);
+        };
+
+        window.toggleClotureSondage = async function(id) {
+            const data = await getData();
+            const s = data.sondages.find(s => s.id === id);
+            if (s) { s.cloture = !s.cloture;
+                await saveData(data);
+                await addLog('Toggle clôture sondage', s.titre);
+                renderSondages(); }
+        };
+
+        // --- Réunions ---
+        window.voterReunion = function(reunionId) {
+            const data = getDataSync();
+            const user = getCurrentUser();
+            const r = data.reunions.find(r => r.id === reunionId);
+            if (!r || r.statut === 'cloture' || new Date(r.dateLimite) < new Date()) { alert('Réunion clôturée.'); return; }
+            if (r.votes.some(v => v.userId === user.id)) { alert('Déjà voté.'); return; }
+            const body = document.getElementById('modalBody');
+            let html = `<h2>Voter - ${r.titre}</h2><form id="voteReunionForm">`;
+            r.creneaux.forEach((c, idx) => {
+                html +=
+                    `<div><input type="radio" name="creneau" value="${idx}" required> ${new Date(c.date).toLocaleDateString()} ${c.heure} (${c.duree} min)</div>`;
+            });
+            html += `<button type="submit" class="btn btn-primary btn-block">Voter</button></form>`;
+            body.innerHTML = html;
+            document.getElementById('modalOverlay').classList.add('active');
+            document.getElementById('voteReunionForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const val = document.querySelector('input[name="creneau"]:checked');
+                if (!val) { alert('Choisissez un créneau.'); return; }
+                const idx = parseInt(val.value);
+                const data = await getData();
+                const r2 = data.reunions.find(r => r.id === reunionId);
+                if (!r2) return;
+                r2.votes.push({ userId: user.id, creneauIndex: idx });
+                await saveData(data);
+                await addLog('Vote réunion', r2.titre);
+                addNotification(user.id, `Vote pour "${r2.titre}"`, 'success');
+                closeModal();
+                renderReunions();
+            });
+        };
+
+        window.cloturerReunion = async function(id) {
+            const data = await getData();
+            const r = data.reunions.find(r => r.id === id);
+            if (r) { r.statut = r.statut === 'cloture' ? 'ouverte' : 'cloture';
+                await saveData(data);
+                await addLog('Toggle clôture réunion', r.titre);
+                renderReunions(); }
+        };
+
+        window.finaliserReunion = async function(id) {
+            const data = await getData();
+            const r = data.reunions.find(r => r.id === id);
+            if (!r || r.creneaux.length === 0) { alert('Aucun créneau.'); return; }
+            const counts = r.creneaux.map((_, idx) => r.votes.filter(v => v.creneauIndex === idx).length);
+            const max = Math.max(...counts);
+            const gagneIdx = counts.indexOf(max);
+            r.creneauGagne = gagneIdx;
+            r.statut = 'cloture';
+            const creneau = r.creneaux[gagneIdx];
+            data.agenda_events.push({ id: generateId(), titre: 'Réunion: ' + r.titre, date: creneau.date,
+                heure: creneau.heure, lieu: 'Salle à définir', couleur: '#4361ee' });
+            await saveData(data);
+            await addLog('Finalisation réunion', r.titre);
+            addNotification(r.id, `Réunion "${r.titre}" planifiée le ${new Date(creneau.date).toLocaleDateString()} à ${creneau.heure}`,
+                'success');
+            renderReunions();
+            renderAgenda();
+        };
+
+        window.deleteReunion = async function(id) {
+            if (!confirm('Supprimer ?')) return;
+            const data = await getData();
+            data.reunions = data.reunions.filter(r => r.id !== id);
+            await saveData(data);
+            await addLog('Suppression réunion', id);
+            renderReunions();
+        };
+
+        window.editReunion = function(id) {
+            const data = getDataSync();
+            const r = data.reunions.find(r => r.id === id);
+            if (r) openModal('reunionForm', r);
+        };
+
+        // --- Alertes ---
+        window.marquerAlerteLu = async function(id) {
+            const data = await getData();
+            const a = data.alertes.find(a => a.id === id);
+            if (a) { a.lu = true;
+                await saveData(data);
+                renderAlertes(); }
+        };
+
+        window.supprimerAlerte = async function(id) {
+            if (!confirm('Supprimer ?')) return;
+            const data = await getData();
+            data.alertes = data.alertes.filter(a => a.id !== id);
+            await saveData(data);
+            renderAlertes();
+        };
+
+        // --- Notifications ---
+        window.marquerLu = async function(id) {
+            const data = await getData();
+            const n = data.notifications.find(n => n.id === id);
+            if (n) { n.read = true;
+                await saveData(data);
+                renderNotifications();
+                updateNotifBadge(); }
+        };
+
+        window.marquerToutLu = async function() {
+            const data = await getData();
+            const user = getCurrentUser();
+            data.notifications.forEach(n => { if (n.userId === user.id) n.read = true; });
+            await saveData(data);
+            renderNotifications();
+            updateNotifBadge();
+        };
+
+        // --- Recherche ---
+        window.globalSearch = function() {
+            const q = document.getElementById('globalSearch').value.toLowerCase().trim();
+            const container = document.getElementById('searchResults');
+            if (!q) { container.innerHTML = '<p class="text-muted">Saisissez un terme.</p>'; return; }
+            const data = getDataSync();
+            const results = [];
+            (data.users || []).forEach(u => { if ((u.nom + u.prenom + u.email).toLowerCase().includes(q)) results.push({
+                    type: 'Utilisateur',
+                    label: u.prenom + ' ' + u.nom + ' (' + u.email + ')'
+                }); });
+            (data.salles || []).forEach(s => { if ((s.nom + s.batiment + s.equipements).toLowerCase().includes(q))
+                    results.push({ type: 'Salle', label: s.nom }); });
+            (data.documents || []).forEach(d => { if (d.nom.toLowerCase().includes(q)) results.push({ type: 'Document',
+                    label: d.nom }); });
+            (data.evenements || []).forEach(e => { if ((e.titre + e.description).toLowerCase().includes(q)) results
+                    .push({ type: 'Événement', label: e.titre }); });
+            (data.absences || []).forEach(a => { if ((a.motif + a.commentaire).toLowerCase().includes(q)) { const u =
+                        data.users.find(u => u.id === a.userId);
+                    results.push({ type: 'Absence', label: (u ? u.prenom + ' ' + u.nom : '') + ' - ' + a.motif }); } });
+            (data.sondages || []).forEach(s => { if ((s.titre + s.description).toLowerCase().includes(q)) results.push({
+                    type: 'Sondage',
+                    label: s.titre
+                }); });
+            container.innerHTML = results.length ? results.map(r =>
+                `<div style="padding:6px 0; border-bottom:1px solid var(--gray-100);"><strong>${r.type}</strong> : ${r.label}</div>`
+                ).join('') : '<p class="text-muted">Aucun résultat.</p>';
+        };
+
+        // --- Admin utilisateurs ---
+        window.editUser = function(id) {
+            const data = getDataSync();
+            const u = data.users.find(u => u.id === id);
+            if (u) openModal('userForm', u);
+        };
+
+        window.deleteUser = async function(id) {
+            if (!confirm('Supprimer ?')) return;
+            const data = await getData();
+            if (data.users.filter(u => u.role === 'admin').length <= 1 && data.users.find(u => u.id === id)?.role ===
+                'admin') {
+                alert('Impossible de supprimer le dernier admin.');
+                return;
+            }
+            data.users = data.users.filter(u => u.id !== id);
+            await saveData(data);
+            await addLog('Suppression utilisateur', id);
+            renderAdmin();
+        };
+
+        window.toggleUserActive = async function(id) {
+            const data = await getData();
+            const u = data.users.find(u => u.id === id);
+            if (u) { u.active = !u.active;
+                await saveData(data);
+                await addLog('Toggle actif', u.email);
+                renderAdmin(); }
+        };
+
+        window.resetPassword = async function(id) {
+            const data = await getData();
+            const u = data.users.find(u => u.id === id);
+            if (!u) return;
+            const pwd = prompt('Nouveau mot de passe pour ' + u.email + ' :');
+            if (pwd && pwd.length >= 6) { u.password = pwd;
+                await saveData(data);
+                await addLog('Reset password', u.email);
+                alert('Mot de passe mis à jour.');
+                renderAdmin(); } else alert('Minimum 6 caractères.');
+        };
+
+        // --- Widgets ---
+        window.ajouterWidget = function() {
+            const data = getDataSync();
+            const user = getCurrentUser();
+            const types = [
+                { value: 'agenda', label: 'Agenda' },
+                { value: 'notifications', label: 'Notifications' },
+                { value: 'stats', label: 'Mes statistiques' }
+            ];
+            const body = document.getElementById('modalBody');
+            let html = `
+                <h2>Ajouter un widget</h2>
+                <form id="widgetForm">
+                    <div class="form-group">
+                        <label>Type</label>
+                        <select id="widgetType">
+                            ${types.map(t => `<option value="${t.value}">${t.label}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Titre</label>
+                        <input type="text" id="widgetTitre" placeholder="Titre du widget" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Ajouter</button>
+                </form>
+            `;
+            body.innerHTML = html;
+            document.getElementById('modalOverlay').classList.add('active');
+            document.getElementById('widgetForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const type = document.getElementById('widgetType').value;
+                const titre = document.getElementById('widgetTitre').value;
+                const config = { titre };
+                if (type === 'notifications') config.nb = 5;
+                const data = await getData();
+                data.widgets.push({ id: generateId(), userId: user.id, type, config });
+                await saveData(data);
+                await addLog('Ajout widget', type);
+                closeModal();
+                renderTableauDeBord();
+            });
+        };
+
+        window.supprimerWidget = async function(id) {
+            if (!confirm('Supprimer ce widget ?')) return;
+            const data = await getData();
+            data.widgets = data.widgets.filter(w => w.id !== id);
+            await saveData(data);
+            await addLog('Suppression widget', id);
+            renderTableauDeBord();
+        };
+
+        // --- EDT ---
+        window.importerICS = async function() {
+            const data = await getData();
+            const user = getCurrentUser();
+            const now = new Date();
+            for (let i = 0; i < 5; i++) {
+                const d = new Date(now);
+                d.setDate(d.getDate() + i + 1);
+                data.edt_events.push({
+                    id: generateId(),
+                    userId: user.id,
+                    titre: `Cours ${['Maths','Français','Histoire','SVT','Anglais'][i % 5]}`,
+                    date: d.toISOString().split('T')[0],
+                    heure: `${8 + i}:00`,
+                    lieu: `Salle ${100 + i}`,
+                    source: 'ics_import'
+                });
+            }
+            await saveData(data);
+            await addLog('Import ICS', '5 événements simulés');
+            alert('Import ICS simulé : 5 événements ajoutés.');
+            renderEDT();
+        };
+
+        window.supprimerEDTEvent = async function(id) {
+            if (!confirm('Supprimer cet événement ?')) return;
+            const data = await getData();
+            data.edt_events = data.edt_events.filter(e => e.id !== id);
+            await saveData(data);
+            await addLog('Suppression événement EDT', id);
+            renderEDT();
+        };
+
+        // --- Paramètres ---
+        window.exporterDonnees = function() {
+            const data = getDataSync();
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'ent_data_backup.json';
+            a.click();
+            addLog('Export données');
+        };
+
+        window.importerFichier = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    await saveData(data);
+                    alert('Importé. Rechargement...');
+                    location.reload();
+                } catch (err) {
+                    alert('Fichier invalide.');
+                }
+            };
+            reader.readAsText(file);
+        };
+
+        window.reinitialiserPlateforme = async function() {
+            if (!confirm('Tout supprimer ? Irréversible.')) return;
+            const defaultData = getDefaultData();
+            await saveData(defaultData);
+            alert('Réinitialisé.');
+            location.reload();
+        };
+
+        // --- Droits ---
+        window.editDroits = function(userId, module) {
+            const data = getDataSync();
+            const user = data.users.find(u => u.id === userId);
+            if (!user) return;
+            if (!user.permissions) user.permissions = {};
+            const p = user.permissions[module] || { read: false, write: false, delete: false };
+            const body = document.getElementById('modalBody');
+            body.innerHTML = `
+                <h2>Droits pour ${user.prenom} ${user.nom} - ${module}</h2>
+                <form id="droitsForm">
+                    <div><input type="checkbox" id="dRead" ${p.read?'checked':''}> <label for="dRead">Lecture</label></div>
+                    <div><input type="checkbox" id="dWrite" ${p.write?'checked':''}> <label for="dWrite">Écriture</label></div>
+                    <div><input type="checkbox" id="dDelete" ${p.delete?'checked':''}> <label for="dDelete">Suppression</label></div>
+                    <button type="submit" class="btn btn-primary btn-block">Enregistrer</button>
+                </form>
+            `;
+            document.getElementById('modalOverlay').classList.add('active');
+            document.getElementById('droitsForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const data = await getData();
+                const user2 = data.users.find(u => u.id === userId);
+                if (!user2) return;
+                user2.permissions[module] = { read: document.getElementById('dRead').checked, write: document
+                        .getElementById('dWrite').checked, delete: document.getElementById('dDelete')
+                        .checked };
+                await saveData(data);
+                await addLog('Modification droits', user2.email + ' - ' + module);
+                closeModal();
+                renderDroits();
+            });
+        };
+
+        // --- Maintenance ---
+        // (le formulaire est géré directement dans renderMaintenance avec son propre submit)
 
         // ================================================================
-        //  DASHBOARD
+        //  FONCTIONS DE RENDU (asynchrones, appellent les fonctions globales)
         // ================================================================
+
         async function renderDashboard() {
             const data = await getData();
             const user = getCurrentUser();
@@ -1688,9 +2304,7 @@
             c.innerHTML = html;
         }
 
-        // ================================================================
-        //  DOCUMENTS
-        // ================================================================
+        // Documents
         async function renderDocuments() {
             const data = await getData();
             const user = getCurrentUser();
@@ -1734,41 +2348,8 @@
             `;
             document.getElementById('page-documents').innerHTML = html;
         }
-        window.filterDocs = function() {
-            const s = document.getElementById('docSearch')?.value.toLowerCase() || '';
-            const c = document.getElementById('docCategoryFilter')?.value || '';
-            document.querySelectorAll('#docTableBody tr').forEach(row => {
-                const text = row.textContent.toLowerCase();
-                const cat = row.dataset.cat || '';
-                let show = true;
-                if (s && !text.includes(s)) show = false;
-                if (c && cat !== c) show = false;
-                row.style.display = show ? '' : 'none';
-            });
-        };
-        window.downloadDoc = function(id) {
-            const data = getDataSync();
-            const d = data.documents.find(d => d.id === id);
-            if (d) { alert(`Téléchargement de "${d.nom}" (simulé)`);
-                addLog('Téléchargement document', d.nom); }
-        };
-        window.deleteDocument = async function(id) {
-            if (!confirm('Supprimer ?')) return;
-            const data = await getData();
-            data.documents = data.documents.filter(d => d.id !== id);
-            await saveData(data);
-            await addLog('Suppression document', id);
-            renderDocuments();
-        };
-        window.editDocument = function(id) {
-            const data = getDataSync();
-            const d = data.documents.find(d => d.id === id);
-            if (d) openModal('documentForm', d);
-        };
 
-        // ================================================================
-        //  INSCRIPTIONS
-        // ================================================================
+        // Inscriptions
         async function renderInscriptions() {
             const data = await getData();
             const user = getCurrentUser();
@@ -1816,69 +2397,8 @@
             `;
             document.getElementById('page-inscriptions').innerHTML = html;
         }
-        window.sinscrire = async function(id) {
-            const data = await getData();
-            const user = getCurrentUser();
-            const evt = data.evenements.find(e => e.id === id);
-            if (!evt) return;
-            const inscrits = data.inscriptions.filter(i => i.evenementId === id);
-            if (evt.nbPlacesMax && inscrits.length >= evt.nbPlacesMax) { alert('Places épuisées.'); return; }
-            if (data.inscriptions.some(i => i.evenementId === id && i.userId === user.id)) { alert('Déjà inscrit.'); return; }
-            data.inscriptions.push({ id: generateId(), evenementId: id, userId: user.id, userNom: user.prenom + ' ' + user
-                    .nom, date: new Date().toISOString(), statut: 'En attente' });
-            await saveData(data);
-            await addLog('Inscription', evt.titre);
-            addNotification(user.id, `Inscrit à "${evt.titre}"`, 'success');
-            renderInscriptions();
-        };
-        window.desinscrire = async function(id) {
-            if (!confirm('Se désinscrire ?')) return;
-            const data = await getData();
-            const user = getCurrentUser();
-            data.inscriptions = data.inscriptions.filter(i => !(i.evenementId === id && i.userId === user.id));
-            await saveData(data);
-            await addLog('Désinscription', id);
-            renderInscriptions();
-        };
-        window.deleteEvenement = async function(id) {
-            if (!confirm('Supprimer ?')) return;
-            const data = await getData();
-            data.evenements = data.evenements.filter(e => e.id !== id);
-            data.inscriptions = data.inscriptions.filter(i => i.evenementId !== id);
-            await saveData(data);
-            await addLog('Suppression événement', id);
-            renderInscriptions();
-        };
-        window.editEvenement = function(id) {
-            const data = getDataSync();
-            const evt = data.evenements.find(e => e.id === id);
-            if (evt) openModal('evenementForm', evt);
-        };
-        window.toggleCloture = async function(id) {
-            const data = await getData();
-            const evt = data.evenements.find(e => e.id === id);
-            if (evt) { evt.cloture = !evt.cloture;
-                await saveData(data);
-                await addLog('Clôture/réouverture', evt.titre);
-                renderInscriptions(); }
-        };
-        window.exporterListe = function(id) {
-            const data = getDataSync();
-            const evt = data.evenements.find(e => e.id === id);
-            if (!evt) return;
-            const inscrits = data.inscriptions.filter(i => i.evenementId === id);
-            const csv = inscrits.map(i => i.userNom).join('\n');
-            const blob = new Blob([`Liste "${evt.titre}"\n${csv}`], { type: 'text/csv' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `inscrits_${evt.titre}.csv`;
-            a.click();
-            addLog('Export liste', evt.titre);
-        };
 
-        // ================================================================
-        //  AGENDA
-        // ================================================================
+        // Agenda
         async function renderAgenda() {
             const data = await getData();
             const isAdminUser = isAdmin();
@@ -1897,69 +2417,8 @@
             document.getElementById('page-agenda').innerHTML = html;
             setAgendaView('jour');
         }
-        window.setAgendaView = function(view) {
-            document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
-            document.querySelector(`.tabs .tab[data-view="${view}"]`)?.classList.add('active');
-            const container = document.getElementById('agendaView');
-            const data = getDataSync();
-            const events = data.agenda_events || [];
-            if (view === 'jour') {
-                const today = new Date().toDateString();
-                const dayEvents = events.filter(e => new Date(e.date).toDateString() === today);
-                container.innerHTML = `<div class="card">
-                    <h4>Événements du ${new Date().toLocaleDateString()}</h4>
-                    ${dayEvents.length ? dayEvents.map(e => `
-                        <div style="border-left:4px solid ${e.couleur||'#4361ee'}; padding:8px 12px; margin:6px 0; background:var(--gray-50); border-radius:8px;">
-                            <strong>${e.titre}</strong> - ${e.heure||''} ${e.lieu ? '📍 '+e.lieu : ''}
-                            ${isAdmin() ? `<button class="btn btn-sm btn-danger" onclick="deleteAgendaEvent('${e.id}')"><i class="fas fa-trash"></i></button>` : ''}
-                        </div>
-                    `).join('') : '<p class="text-muted">Aucun événement.</p>'}
-                </div>`;
-            } else if (view === 'semaine') {
-                const today = new Date();
-                let html = `<div class="card"><h4>Semaine du ${today.toLocaleDateString()}</h4>`;
-                for (let i = 0; i < 7; i++) {
-                    const d = new Date(today);
-                    d.setDate(d.getDate() + i);
-                    const dayEvents = events.filter(e => new Date(e.date).toDateString() === d.toDateString());
-                    html += `<div style="padding:6px 12px; background:var(--gray-50); border-radius:6px; margin:4px 0;">
-                        <strong>${d.toLocaleDateString()}</strong> : ${dayEvents.length ? dayEvents.map(e=>e.titre).join(', ') : 'Aucun'}
-                    </div>`;
-                }
-                html += '</div>';
-                container.innerHTML = html;
-            } else if (view === 'mois') {
-                const mois = ['Janv', 'Févr', 'Mars', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sept', 'Oct', 'Nov', 'Déc'];
-                const now = new Date();
-                const year = now.getFullYear(),
-                    month = now.getMonth();
-                const firstDay = new Date(year, month, 1).getDay();
-                const days = new Date(year, month + 1, 0).getDate();
-                let html = `<div class="card"><h4>${mois[month]} ${year}</h4><div class="calendar-grid">`;
-                const jours = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
-                for (let j of jours) html += `<div class="day day-header">${j}</div>`;
-                for (let i = 0; i < (firstDay === 0 ? 6 : firstDay - 1); i++) html += `<div class="day"></div>`;
-                for (let d = 1; d <= days; d++) {
-                    const dateObj = new Date(year, month, d);
-                    const hasEvent = events.some(e => new Date(e.date).toDateString() === dateObj.toDateString());
-                    html += `<div class="day day-number ${hasEvent?'has-event':''}">${d}</div>`;
-                }
-                html += '</div></div>';
-                container.innerHTML = html;
-            }
-        };
-        window.deleteAgendaEvent = async function(id) {
-            if (!confirm('Supprimer ?')) return;
-            const data = await getData();
-            data.agenda_events = data.agenda_events.filter(e => e.id !== id);
-            await saveData(data);
-            await addLog('Suppression agenda', id);
-            renderAgenda();
-        };
 
-        // ================================================================
-        //  SALLES
-        // ================================================================
+        // Salles
         async function renderSalles() {
             const data = await getData();
             const user = getCurrentUser();
@@ -2041,86 +2500,8 @@
             `;
             document.getElementById('page-salles').innerHTML = html;
         }
-        window.reserverSalle = async function(salleId) {
-            const data = await getData();
-            const user = getCurrentUser();
-            const date = prompt('Date (JJ/MM/AAAA) :');
-            if (!date) return;
-            const heure = prompt('Heure (HH:MM) :');
-            if (!heure) return;
-            const salle = data.salles.find(s => s.id === salleId);
-            if (salle && salle.disponible === false) { alert('Salle indisponible.'); return; }
-            if (data.reservations.some(r => r.salleId === salleId && r.date === date && r.heure === heure && r.statut !==
-                    'Refusée')) {
-                alert('Conflit détecté.');
-                return;
-            }
-            data.reservations.push({ id: generateId(), salleId, userId: user.id, date, heure, statut: 'En attente',
-                dateCreation: new Date().toISOString() });
-            await saveData(data);
-            await addLog('Réservation salle', salleId);
-            addNotification(user.id, `Demande de réservation ${salle.nom} le ${date} à ${heure}`, 'info');
-            renderSalles();
-        };
-        window.annulerReservation = async function(id) {
-            if (!confirm('Annuler ?')) return;
-            const data = await getData();
-            data.reservations = data.reservations.filter(r => r.id !== id);
-            await saveData(data);
-            await addLog('Annulation réservation', id);
-            renderSalles();
-        };
-        window.approuverReservation = async function(id) {
-            const data = await getData();
-            const r = data.reservations.find(r => r.id === id);
-            if (r) { r.statut = 'Approuvée';
-                await saveData(data);
-                await addLog('Approbation réservation', id);
-                addNotification(r.userId, 'Réservation approuvée', 'success');
-                renderSalles(); }
-        };
-        window.refuserReservation = async function(id) {
-            const data = await getData();
-            const r = data.reservations.find(r => r.id === id);
-            if (r) { r.statut = 'Refusée';
-                await saveData(data);
-                await addLog('Refus réservation', id);
-                addNotification(r.userId, 'Réservation refusée', 'danger');
-                renderSalles(); }
-        };
-        window.supprimerReservation = async function(id) {
-            if (!confirm('Supprimer ?')) return;
-            const data = await getData();
-            data.reservations = data.reservations.filter(r => r.id !== id);
-            await saveData(data);
-            await addLog('Suppression réservation', id);
-            renderSalles();
-        };
-        window.deleteSalle = async function(id) {
-            if (!confirm('Supprimer ?')) return;
-            const data = await getData();
-            data.salles = data.salles.filter(s => s.id !== id);
-            await saveData(data);
-            await addLog('Suppression salle', id);
-            renderSalles();
-        };
-        window.editSalle = function(id) {
-            const data = getDataSync();
-            const s = data.salles.find(s => s.id === id);
-            if (s) openModal('salleForm', s);
-        };
-        window.toggleDispoSalle = async function(id) {
-            const data = await getData();
-            const s = data.salles.find(s => s.id === id);
-            if (s) { s.disponible = s.disponible === false ? true : false;
-                await saveData(data);
-                await addLog('Toggle disponibilité', s.nom);
-                renderSalles(); }
-        };
 
-        // ================================================================
-        //  ABSENCES
-        // ================================================================
+        // Absences
         async function renderAbsences() {
             const data = await getData();
             const user = getCurrentUser();
@@ -2181,36 +2562,8 @@
             `;
             document.getElementById('page-absences').innerHTML = html;
         }
-        window.accepterAbsence = async function(id) {
-            const data = await getData();
-            const a = data.absences.find(a => a.id === id);
-            if (a) { a.statut = 'Acceptée';
-                await saveData(data);
-                await addLog('Acceptation absence', id);
-                addNotification(a.userId, 'Absence acceptée', 'success');
-                renderAbsences(); }
-        };
-        window.refuserAbsence = async function(id) {
-            const data = await getData();
-            const a = data.absences.find(a => a.id === id);
-            if (a) { a.statut = 'Refusée';
-                await saveData(data);
-                await addLog('Refus absence', id);
-                addNotification(a.userId, 'Absence refusée', 'danger');
-                renderAbsences(); }
-        };
-        window.supprimerAbsence = async function(id) {
-            if (!confirm('Supprimer ?')) return;
-            const data = await getData();
-            data.absences = data.absences.filter(a => a.id !== id);
-            await saveData(data);
-            await addLog('Suppression absence', id);
-            renderAbsences();
-        };
 
-        // ================================================================
-        //  SONDAGES
-        // ================================================================
+        // Sondages
         async function renderSondages() {
             const data = await getData();
             const user = getCurrentUser();
@@ -2267,68 +2620,8 @@
             `;
             document.getElementById('page-sondages').innerHTML = html;
         }
-        window.voterSondage = function(sondageId) {
-            const data = getDataSync();
-            const user = getCurrentUser();
-            const s = data.sondages.find(s => s.id === sondageId);
-            if (!s || s.cloture || new Date(s.dateFin) < new Date()) { alert('Sondage clôturé.'); return; }
-            if (s.votes.some(v => v.userId === user.id)) { alert('Déjà voté.'); return; }
-            const body = document.getElementById('modalBody');
-            let html = `<h2>Voter : ${s.titre}</h2><form id="voteForm">`;
-            s.questions.forEach((q, idx) => {
-                html += `<div class="form-group"><label>${q.texte}</label>`;
-                q.options.forEach((opt, oi) => {
-                    html += `<div><input type="radio" name="q${idx}" value="${oi}" required> ${opt}</div>`;
-                });
-                html += `</div>`;
-            });
-            html += `<button type="submit" class="btn btn-primary btn-block">Envoyer</button></form>`;
-            body.innerHTML = html;
-            document.getElementById('modalOverlay').classList.add('active');
-            document.getElementById('voteForm').addEventListener('submit', async function(e) {
-                e.preventDefault();
-                const reponses = {};
-                s.questions.forEach((q, idx) => {
-                    const val = document.querySelector(`input[name="q${idx}"]:checked`);
-                    if (val) reponses[idx] = parseInt(val.value);
-                });
-                if (Object.keys(reponses).length !== s.questions.length) { alert('Répondez à tout.'); return; }
-                const data = await getData();
-                const s2 = data.sondages.find(s => s.id === sondageId);
-                if (!s2) return;
-                s2.votes.push({ userId: user.id, reponses, date: new Date().toISOString() });
-                await saveData(data);
-                await addLog('Vote sondage', s2.titre);
-                addNotification(user.id, `Vote dans "${s2.titre}"`, 'success');
-                closeModal();
-                renderSondages();
-            });
-        };
-        window.deleteSondage = async function(id) {
-            if (!confirm('Supprimer ?')) return;
-            const data = await getData();
-            data.sondages = data.sondages.filter(s => s.id !== id);
-            await saveData(data);
-            await addLog('Suppression sondage', id);
-            renderSondages();
-        };
-        window.editSondage = function(id) {
-            const data = getDataSync();
-            const s = data.sondages.find(s => s.id === id);
-            if (s) openModal('sondageForm', s);
-        };
-        window.toggleClotureSondage = async function(id) {
-            const data = await getData();
-            const s = data.sondages.find(s => s.id === id);
-            if (s) { s.cloture = !s.cloture;
-                await saveData(data);
-                await addLog('Toggle clôture sondage', s.titre);
-                renderSondages(); }
-        };
 
-        // ================================================================
-        //  REUNIONS
-        // ================================================================
+        // Réunions
         async function renderReunions() {
             const data = await getData();
             const user = getCurrentUser();
@@ -2381,81 +2674,8 @@
             `;
             document.getElementById('page-reunions').innerHTML = html;
         }
-        window.voterReunion = function(reunionId) {
-            const data = getDataSync();
-            const user = getCurrentUser();
-            const r = data.reunions.find(r => r.id === reunionId);
-            if (!r || r.statut === 'cloture' || new Date(r.dateLimite) < new Date()) { alert('Réunion clôturée.'); return; }
-            if (r.votes.some(v => v.userId === user.id)) { alert('Déjà voté.'); return; }
-            const body = document.getElementById('modalBody');
-            let html = `<h2>Voter - ${r.titre}</h2><form id="voteReunionForm">`;
-            r.creneaux.forEach((c, idx) => {
-                html +=
-                    `<div><input type="radio" name="creneau" value="${idx}" required> ${new Date(c.date).toLocaleDateString()} ${c.heure} (${c.duree} min)</div>`;
-            });
-            html += `<button type="submit" class="btn btn-primary btn-block">Voter</button></form>`;
-            body.innerHTML = html;
-            document.getElementById('modalOverlay').classList.add('active');
-            document.getElementById('voteReunionForm').addEventListener('submit', async function(e) {
-                e.preventDefault();
-                const val = document.querySelector('input[name="creneau"]:checked');
-                if (!val) { alert('Choisissez un créneau.'); return; }
-                const idx = parseInt(val.value);
-                const data = await getData();
-                const r2 = data.reunions.find(r => r.id === reunionId);
-                if (!r2) return;
-                r2.votes.push({ userId: user.id, creneauIndex: idx });
-                await saveData(data);
-                await addLog('Vote réunion', r2.titre);
-                addNotification(user.id, `Vote pour "${r2.titre}"`, 'success');
-                closeModal();
-                renderReunions();
-            });
-        };
-        window.cloturerReunion = async function(id) {
-            const data = await getData();
-            const r = data.reunions.find(r => r.id === id);
-            if (r) { r.statut = r.statut === 'cloture' ? 'ouverte' : 'cloture';
-                await saveData(data);
-                await addLog('Toggle clôture réunion', r.titre);
-                renderReunions(); }
-        };
-        window.finaliserReunion = async function(id) {
-            const data = await getData();
-            const r = data.reunions.find(r => r.id === id);
-            if (!r || r.creneaux.length === 0) { alert('Aucun créneau.'); return; }
-            const counts = r.creneaux.map((_, idx) => r.votes.filter(v => v.creneauIndex === idx).length);
-            const max = Math.max(...counts);
-            const gagneIdx = counts.indexOf(max);
-            r.creneauGagne = gagneIdx;
-            r.statut = 'cloture';
-            const creneau = r.creneaux[gagneIdx];
-            data.agenda_events.push({ id: generateId(), titre: 'Réunion: ' + r.titre, date: creneau.date,
-                heure: creneau.heure, lieu: 'Salle à définir', couleur: '#4361ee' });
-            await saveData(data);
-            await addLog('Finalisation réunion', r.titre);
-            addNotification(r.id, `Réunion "${r.titre}" planifiée le ${new Date(creneau.date).toLocaleDateString()} à ${creneau.heure}`,
-                'success');
-            renderReunions();
-            renderAgenda();
-        };
-        window.deleteReunion = async function(id) {
-            if (!confirm('Supprimer ?')) return;
-            const data = await getData();
-            data.reunions = data.reunions.filter(r => r.id !== id);
-            await saveData(data);
-            await addLog('Suppression réunion', id);
-            renderReunions();
-        };
-        window.editReunion = function(id) {
-            const data = getDataSync();
-            const r = data.reunions.find(r => r.id === id);
-            if (r) openModal('reunionForm', r);
-        };
 
-        // ================================================================
-        //  ALERTES
-        // ================================================================
+        // Alertes
         async function renderAlertes() {
             const data = await getData();
             const user = getCurrentUser();
@@ -2483,24 +2703,8 @@
             `;
             document.getElementById('page-alertes').innerHTML = html;
         }
-        window.marquerAlerteLu = async function(id) {
-            const data = await getData();
-            const a = data.alertes.find(a => a.id === id);
-            if (a) { a.lu = true;
-                await saveData(data);
-                renderAlertes(); }
-        };
-        window.supprimerAlerte = async function(id) {
-            if (!confirm('Supprimer ?')) return;
-            const data = await getData();
-            data.alertes = data.alertes.filter(a => a.id !== id);
-            await saveData(data);
-            renderAlertes();
-        };
 
-        // ================================================================
-        //  NOTIFICATIONS
-        // ================================================================
+        // Notifications
         async function renderNotifications() {
             const data = await getData();
             const user = getCurrentUser();
@@ -2523,26 +2727,8 @@
             `;
             document.getElementById('page-notifications').innerHTML = html;
         }
-        window.marquerLu = async function(id) {
-            const data = await getData();
-            const n = data.notifications.find(n => n.id === id);
-            if (n) { n.read = true;
-                await saveData(data);
-                renderNotifications();
-                updateNotifBadge(); }
-        };
-        window.marquerToutLu = async function() {
-            const data = await getData();
-            const user = getCurrentUser();
-            data.notifications.forEach(n => { if (n.userId === user.id) n.read = true; });
-            await saveData(data);
-            renderNotifications();
-            updateNotifBadge();
-        };
 
-        // ================================================================
-        //  RECHERCHE
-        // ================================================================
+        // Recherche
         function renderRecherche() {
             let html = `
                 <div class="page-title">Recherche globale</div>
@@ -2554,37 +2740,8 @@
             `;
             document.getElementById('page-recherche').innerHTML = html;
         }
-        window.globalSearch = function() {
-            const q = document.getElementById('globalSearch').value.toLowerCase().trim();
-            const container = document.getElementById('searchResults');
-            if (!q) { container.innerHTML = '<p class="text-muted">Saisissez un terme.</p>'; return; }
-            const data = getDataSync();
-            const results = [];
-            (data.users || []).forEach(u => { if ((u.nom + u.prenom + u.email).toLowerCase().includes(q)) results.push({
-                    type: 'Utilisateur',
-                    label: u.prenom + ' ' + u.nom + ' (' + u.email + ')'
-                }); });
-            (data.salles || []).forEach(s => { if ((s.nom + s.batiment + s.equipements).toLowerCase().includes(q))
-                    results.push({ type: 'Salle', label: s.nom }); });
-            (data.documents || []).forEach(d => { if (d.nom.toLowerCase().includes(q)) results.push({ type: 'Document',
-                    label: d.nom }); });
-            (data.evenements || []).forEach(e => { if ((e.titre + e.description).toLowerCase().includes(q)) results
-                    .push({ type: 'Événement', label: e.titre }); });
-            (data.absences || []).forEach(a => { if ((a.motif + a.commentaire).toLowerCase().includes(q)) { const u =
-                        data.users.find(u => u.id === a.userId);
-                    results.push({ type: 'Absence', label: (u ? u.prenom + ' ' + u.nom : '') + ' - ' + a.motif }); } });
-            (data.sondages || []).forEach(s => { if ((s.titre + s.description).toLowerCase().includes(q)) results.push({
-                    type: 'Sondage',
-                    label: s.titre
-                }); });
-            container.innerHTML = results.length ? results.map(r =>
-                `<div style="padding:6px 0; border-bottom:1px solid var(--gray-100);"><strong>${r.type}</strong> : ${r.label}</div>`
-                ).join('') : '<p class="text-muted">Aucun résultat.</p>';
-        };
 
-        // ================================================================
-        //  ADMIN
-        // ================================================================
+        // Admin
         async function renderAdmin() {
             if (!isAdmin()) { document.getElementById('page-admin').innerHTML =
                     '<p class="text-muted">Accès réservé.</p>'; return; }
@@ -2641,47 +2798,8 @@
             `;
             document.getElementById('page-admin').innerHTML = html;
         }
-        window.editUser = function(id) {
-            const data = getDataSync();
-            const u = data.users.find(u => u.id === id);
-            if (u) openModal('userForm', u);
-        };
-        window.deleteUser = async function(id) {
-            if (!confirm('Supprimer ?')) return;
-            const data = await getData();
-            if (data.users.filter(u => u.role === 'admin').length <= 1 && data.users.find(u => u.id === id)?.role ===
-                'admin') {
-                alert('Impossible de supprimer le dernier admin.');
-                return;
-            }
-            data.users = data.users.filter(u => u.id !== id);
-            await saveData(data);
-            await addLog('Suppression utilisateur', id);
-            renderAdmin();
-        };
-        window.toggleUserActive = async function(id) {
-            const data = await getData();
-            const u = data.users.find(u => u.id === id);
-            if (u) { u.active = !u.active;
-                await saveData(data);
-                await addLog('Toggle actif', u.email);
-                renderAdmin(); }
-        };
-        window.resetPassword = async function(id) {
-            const data = await getData();
-            const u = data.users.find(u => u.id === id);
-            if (!u) return;
-            const pwd = prompt('Nouveau mot de passe pour ' + u.email + ' :');
-            if (pwd && pwd.length >= 6) { u.password = pwd;
-                await saveData(data);
-                await addLog('Reset password', u.email);
-                alert('Mot de passe mis à jour.');
-                renderAdmin(); } else alert('Minimum 6 caractères.');
-        };
 
-        // ================================================================
-        //  STATISTIQUES
-        // ================================================================
+        // Statistiques
         async function renderStatistiques() {
             const data = await getData();
             const users = data.users || [];
@@ -2722,9 +2840,7 @@
             }, 100);
         }
 
-        // ================================================================
-        //  PARAMETRES
-        // ================================================================
+        // Paramètres
         async function renderParametres() {
             if (!isAdmin()) { document.getElementById('page-parametres').innerHTML =
                     '<p class="text-muted">Accès réservé.</p>'; return; }
@@ -2775,42 +2891,8 @@
                 render();
             });
         }
-        window.exporterDonnees = function() {
-            const data = getDataSync();
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'ent_data_backup.json';
-            a.click();
-            addLog('Export données');
-        };
-        window.importerFichier = function(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = async function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    await saveData(data);
-                    alert('Importé. Rechargement...');
-                    location.reload();
-                } catch (err) {
-                    alert('Fichier invalide.');
-                }
-            };
-            reader.readAsText(file);
-        };
-        window.reinitialiserPlateforme = async function() {
-            if (!confirm('Tout supprimer ? Irréversible.')) return;
-            const defaultData = getDefaultData();
-            await saveData(defaultData);
-            alert('Réinitialisé.');
-            location.reload();
-        };
 
-        // ================================================================
-        //  DROITS
-        // ================================================================
+        // Droits
         async function renderDroits() {
             if (!isAdmin()) { document.getElementById('page-droits').innerHTML =
                     '<p class="text-muted">Accès réservé.</p>'; return; }
@@ -2844,41 +2926,8 @@
             `;
             document.getElementById('page-droits').innerHTML = html;
         }
-        window.editDroits = function(userId, module) {
-            const data = getDataSync();
-            const user = data.users.find(u => u.id === userId);
-            if (!user) return;
-            if (!user.permissions) user.permissions = {};
-            const p = user.permissions[module] || { read: false, write: false, delete: false };
-            const body = document.getElementById('modalBody');
-            body.innerHTML = `
-                <h2>Droits pour ${user.prenom} ${user.nom} - ${module}</h2>
-                <form id="droitsForm">
-                    <div><input type="checkbox" id="dRead" ${p.read?'checked':''}> <label for="dRead">Lecture</label></div>
-                    <div><input type="checkbox" id="dWrite" ${p.write?'checked':''}> <label for="dWrite">Écriture</label></div>
-                    <div><input type="checkbox" id="dDelete" ${p.delete?'checked':''}> <label for="dDelete">Suppression</label></div>
-                    <button type="submit" class="btn btn-primary btn-block">Enregistrer</button>
-                </form>
-            `;
-            document.getElementById('modalOverlay').classList.add('active');
-            document.getElementById('droitsForm').addEventListener('submit', async function(e) {
-                e.preventDefault();
-                const data = await getData();
-                const user2 = data.users.find(u => u.id === userId);
-                if (!user2) return;
-                user2.permissions[module] = { read: document.getElementById('dRead').checked, write: document
-                        .getElementById('dWrite').checked, delete: document.getElementById('dDelete')
-                        .checked };
-                await saveData(data);
-                await addLog('Modification droits', user2.email + ' - ' + module);
-                closeModal();
-                renderDroits();
-            });
-        };
 
-        // ================================================================
-        //  TABLEAU DE BORD PERSONNALISABLE (Module 13)
-        // ================================================================
+        // Tableau de bord personnalisable (Module 13)
         async function renderTableauDeBord() {
             const data = await getData();
             const user = getCurrentUser();
@@ -2963,7 +3012,6 @@
                             } else {
                                 this.parentNode.insertBefore(dragEl, this);
                             }
-                            // Sauvegarder l'ordre
                             const order = Array.from(parent.children).map(el => el.dataset.widgetId);
                             const data = getDataSync();
                             const widgets = data.widgets;
@@ -2978,60 +3026,7 @@
             }
         }
 
-        window.ajouterWidget = function() {
-            const data = getDataSync();
-            const user = getCurrentUser();
-            const types = [
-                { value: 'agenda', label: 'Agenda' },
-                { value: 'notifications', label: 'Notifications' },
-                { value: 'stats', label: 'Mes statistiques' }
-            ];
-            const body = document.getElementById('modalBody');
-            let html = `
-                <h2>Ajouter un widget</h2>
-                <form id="widgetForm">
-                    <div class="form-group">
-                        <label>Type</label>
-                        <select id="widgetType">
-                            ${types.map(t => `<option value="${t.value}">${t.label}</option>`).join('')}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Titre</label>
-                        <input type="text" id="widgetTitre" placeholder="Titre du widget" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-block">Ajouter</button>
-                </form>
-            `;
-            body.innerHTML = html;
-            document.getElementById('modalOverlay').classList.add('active');
-            document.getElementById('widgetForm').addEventListener('submit', async function(e) {
-                e.preventDefault();
-                const type = document.getElementById('widgetType').value;
-                const titre = document.getElementById('widgetTitre').value;
-                const config = { titre };
-                if (type === 'notifications') config.nb = 5;
-                const data = await getData();
-                data.widgets.push({ id: generateId(), userId: user.id, type, config });
-                await saveData(data);
-                await addLog('Ajout widget', type);
-                closeModal();
-                renderTableauDeBord();
-            });
-        };
-
-        window.supprimerWidget = async function(id) {
-            if (!confirm('Supprimer ce widget ?')) return;
-            const data = await getData();
-            data.widgets = data.widgets.filter(w => w.id !== id);
-            await saveData(data);
-            await addLog('Suppression widget', id);
-            renderTableauDeBord();
-        };
-
-        // ================================================================
-        //  EMPLOI DU TEMPS (EDT) - Module 15
-        // ================================================================
+        // EDT
         async function renderEDT() {
             const data = await getData();
             const user = getCurrentUser();
@@ -3072,42 +3067,7 @@
             document.getElementById('page-edt').innerHTML = html;
         }
 
-        window.importerICS = async function() {
-            const data = await getData();
-            const user = getCurrentUser();
-            // Simulation d'import (parsing réel possible avec une librairie ICS)
-            const now = new Date();
-            for (let i = 0; i < 5; i++) {
-                const d = new Date(now);
-                d.setDate(d.getDate() + i + 1);
-                data.edt_events.push({
-                    id: generateId(),
-                    userId: user.id,
-                    titre: `Cours ${['Maths','Français','Histoire','SVT','Anglais'][i % 5]}`,
-                    date: d.toISOString().split('T')[0],
-                    heure: `${8 + i}:00`,
-                    lieu: `Salle ${100 + i}`,
-                    source: 'ics_import'
-                });
-            }
-            await saveData(data);
-            await addLog('Import ICS', '5 événements simulés');
-            alert('Import ICS simulé : 5 événements ajoutés.');
-            renderEDT();
-        };
-
-        window.supprimerEDTEvent = async function(id) {
-            if (!confirm('Supprimer cet événement ?')) return;
-            const data = await getData();
-            data.edt_events = data.edt_events.filter(e => e.id !== id);
-            await saveData(data);
-            await addLog('Suppression événement EDT', id);
-            renderEDT();
-        };
-
-        // ================================================================
-        //  MODE MAINTENANCE - Module 20
-        // ================================================================
+        // Maintenance
         async function renderMaintenance() {
             if (!isAdmin()) {
                 document.getElementById('page-maintenance').innerHTML =
@@ -3510,12 +3470,11 @@
         });
 
         // ================================================================
-        //  SCRIPT DE SECOURS POUR LA CONSOLE (connexion forcée)
+        //  SCRIPT DE SECOURS CONSOLE
         // ================================================================
         console.log('%c🔐 SCRIPT DE SECOURS : copiez ceci dans la console pour vous connecter en admin',
             'font-size:16px; background:#f9a825; color:#212529; padding:4px 10px; border-radius:4px;');
         console.log(`(async function() {
-            // Forcer la session admin
             const data = await (async () => {
                 const raw = localStorage.getItem('ent_data');
                 if (raw) return JSON.parse(raw);
@@ -3556,13 +3515,11 @@
             console.log('✅ ENT Collège avec Firestore (synchronisation temps réel) prêt.');
             console.log('📌 Admin: admin@college.fr / Admin123!');
             console.log('🔑 Secours: Ctrl+Alt+D ou bouton en bas à droite');
-            console.log('🛠️ Pour une connexion forcée, copiez le script de secours affiché ci-dessus.');
         })();
 
-        // Fonction d'initialisation
+        // Fonction d'initialisation (déjà déclarée plus haut mais on la garde)
         async function initData() {
             const data = await loadDataAsync();
-            // Vérifier les clés manquantes
             const defaultData = getDefaultData();
             for (let key in defaultData) {
                 if (!data.hasOwnProperty(key) || !Array.isArray(data[key])) {
